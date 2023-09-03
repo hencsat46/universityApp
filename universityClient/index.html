@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/script.js" defer></script>
+    <link href="https://fonts.cdnfonts.com/css/open-sans" rel="stylesheet">    <title>Document</title>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <div class="links">
+                <a href="#">Университеты</a>
+                <a href="#">Список студентов</a>
+            </div>
+            <div class="sign-btns">
+                <div class="sign-up">
+                    <button class="sign-up-btn" onclick="clickButton(this)">
+                        Зарегистрироваться
+                    </button>
+                </div>
+                <div class="login">
+                    <button class="login-btn" onclick="clickButton(this)">
+                        Войти
+                    </button>
+                </div>
+            </div>
+        </header>
+        <div class="form">
+            <button class="close-form" onclick="closeForm(0)">
+                <img src="img/close.png" alt="x">
+            </button>
+            <div class="input-box">
+                <label>Логин</label><br/>
+                <input type="text">
+            </div>
+            <div class="input-box">
+                <label>Пароль</label><br/>
+                <input type="password">
+            </div>
+            <div class="button-wrapper">
+                <button class="sign-in">
+                    Войти
+                </button>
+            </div>
+        </div>
+        <div class="form">
+            <button class="close-form" onclick="closeForm(1)">
+                <img src="img/close.png" alt="x">
+            </button>
+            <div class="input-box">
+                <label>Логин</label><br/>
+                <input type="text">
+            </div>
+            <div class="input-box">
+                <label>Пароль</label><br/>
+                <input type="password">
+            </div>
+            <div class="button-wrapper">
+                <button class="sign-up">
+                    Зарегистрироваться
+                </button>
+            </div>
+        </div>
+    </div>    
+</body>
+</html>

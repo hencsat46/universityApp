@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+}
+
+body {
+    min-height: 1080px;
+    background: rgb(34,193,195);
+    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(243,253,45,1) 100%); 
+    
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
+    background: red;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sign-btns {
+    display: flex;
+}
+
+button.sign-up-btn {
+    width: 250px;
+    cursor: pointer;
+    height: 50px;
+    background: transparent;
+    border: 4px solid white;
+    border-radius: 10px;
+    font-size: 20px;
+    color: white;
+    font-weight: 700;
+    margin: 0 15px;
+}
+
+button.login-btn {
+    width: 130px;
+    height: 50px;
+    cursor: pointer;
+    background: transparent;
+    border: 4px solid white;
+    border-radius: 10px;
+    font-size: 20px;
+    color: white;
+    font-weight: 700;
+    margin: 0 15px;
+}
+
+.links a {
+    padding: 0 10px;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+}
+
+.form {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    height: 220px;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 15px;
+    padding: 15px 20px;
+}
+.input-box {
+    margin: 15px 0;
+}
+
+button.close-form {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+button.close-form img {
+    width: 20px;
+    height: 20px;
+}
+
+.input-box input {
+    margin-right: 15px;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: start;
+}
+
+button.sign-in {
+    cursor: pointer;
+    width: 60px;
+    background: transparent;
+    border: 5px solid black;
+    border-radius: 10px;
+}
+
+button.sign-up {
+    cursor: pointer;
+    width: 160px;
+    background: transparent;
+    border: 5px solid black;
+    border-radius: 10px;
+}
