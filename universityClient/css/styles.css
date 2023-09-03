@@ -13,6 +13,10 @@ body {
     
 }
 
+.wrapper {
+    margin: 0 1100px;
+}
+
 header {
     position: fixed;
     top: 0;
