@@ -2,15 +2,17 @@
 function clickButton(elem) {
     const elemName = elem.textContent.trim();
     const element = document.querySelectorAll('.form');
+    console.log(element)
     switch(elemName) {
         case "Войти":
             element[0].style.display = "block"
             element[1].style.display = "none"
-            
+            document.querySelector("ul.ul").style.filter = "blur(3px)"
             break;
         case "Зарегистрироваться":
             element[0].style.display = "none"
             element[1].style.display = "block"
+            document.querySelector("ul.ul").style.filter = "blur(3px)"
             break;
     }
     
@@ -19,6 +21,7 @@ function clickButton(elem) {
 function closeForm(number) {
     const element = document.querySelectorAll('.form');
     element[number].style.display = "none"
+    document.querySelector("ul.ul").style.filter = "blur(0px)"
 }
 
 function sendData(elem) {
@@ -49,3 +52,4 @@ async function tempFunc() {
 }
 
 window.onscroll=tempFunc
+

@@ -8,8 +8,8 @@
 
 body {
     min-height: 1080px;
-    background: rgb(255,255,255);
-    background: linear-gradient(180deg, rgba(255,255,255,1) 16%, rgba(0,33,255,1) 54%, rgba(255,0,0,1) 88%); 
+    background: rgb(42,231,199);
+    background: linear-gradient(90deg, rgba(42,231,199,1) 35%, rgba(0,212,255,1) 100%); 
     animation: 2s infinite alternate slidein;
     filter: blur(0px);
 }
@@ -25,10 +25,11 @@ header {
     left: 0;
     width: 100%;
     padding: 20px 100px;
-    background: red;
+    background: black;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    filter: blur(0px);
 }
 
 .sign-btns {
@@ -71,7 +72,7 @@ button.login-btn {
 .form {
     display: none;
     position: fixed;
-    top: 50%;
+    top: 30%;
     left: 50%;
     width: 280px;
     height: 220px;
@@ -79,6 +80,7 @@ button.login-btn {
     background: white;
     border-radius: 15px;
     padding: 15px 20px;
+    z-index: 1000;
 }
 .input-box {
     margin: 15px 0;
@@ -138,6 +140,7 @@ button.sign-up {
 ul {
     margin-top: 50px;
     list-style-type: none;
+    transition: .2s;
 }
 
 ul.ul li {
