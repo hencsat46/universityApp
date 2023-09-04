@@ -2,12 +2,11 @@
 function clickButton(elem) {
     const elemName = elem.textContent.trim();
     const element = document.querySelectorAll('.form');
-    let displaySignIn = element[0].style.display
-    let displaySignUp = element[1].style.display
     switch(elemName) {
         case "Войти":
             element[0].style.display = "block"
             element[1].style.display = "none"
+            
             break;
         case "Зарегистрироваться":
             element[0].style.display = "none"
@@ -42,3 +41,11 @@ async function postData(url, data) {
     })
     console.log(await response.text())
 }
+
+async function tempFunc() {
+    
+    console.log(document.documentElement.getBoundingClientRect().bottom)
+    console.log(document.documentElement.clientHeight)
+}
+
+window.onscroll=tempFunc

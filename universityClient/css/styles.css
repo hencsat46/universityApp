@@ -8,13 +8,15 @@
 
 body {
     min-height: 1080px;
-    background: rgb(34,193,195);
-    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(243,253,45,1) 100%); 
-    
+    background: rgb(255,255,255);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 16%, rgba(0,33,255,1) 54%, rgba(255,0,0,1) 88%); 
+    animation: 2s infinite alternate slidein;
+    filter: blur(0px);
 }
 
 .wrapper {
-    margin: 0 1100px;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 header {
@@ -119,4 +121,29 @@ button.sign-up {
     background: transparent;
     border: 5px solid black;
     border-radius: 10px;
+}
+
+.uni-wrapper img {
+    display: block;
+    width: 500px;
+    height: 400px;
+    margin: 0 auto;
+}
+
+.uni-wrapper h2 {
+    font-size: 50px;
+    text-align: center;
+}
+
+ul {
+    margin-top: 50px;
+    list-style-type: none;
+}
+
+ul.ul li {
+    margin-top: 50px;
+}
+
+.uni-wrapper .uni-text {
+    margin-top: 25px;
 }
