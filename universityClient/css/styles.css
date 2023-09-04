@@ -32,11 +32,20 @@ header {
     filter: blur(0px);
 }
 
+.university-choice:hover {
+    text-decoration: underline;
+}
+
+.students-choice:hover {
+    text-decoration: underline;
+}
+
 .sign-btns {
     display: flex;
 }
 
 button.sign-up-btn {
+    transition: .3s;
     width: 250px;
     cursor: pointer;
     height: 50px;
@@ -50,6 +59,7 @@ button.sign-up-btn {
 }
 
 button.login-btn {
+    transition: .3s;
     width: 130px;
     height: 50px;
     cursor: pointer;
@@ -62,6 +72,16 @@ button.login-btn {
     margin: 0 15px;
 }
 
+button.sign-up-btn:hover {
+    color: black;
+    background: white;
+}
+
+button.login-btn:hover {
+    color: black;
+    background: white;
+}
+
 .links a {
     padding: 0 10px;
     text-decoration: none;
@@ -71,6 +91,7 @@ button.login-btn {
 
 .form {
     display: none;
+    transition: .3s;
     position: fixed;
     top: 30%;
     left: 50%;

@@ -45,10 +45,29 @@ async function postData(url, data) {
     console.log(await response.text())
 }
 
-async function tempFunc() {
+async function getUniversity(url, data) {
+    const response = await fetch(url, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+}
+
+function makeJsonUniversity() {
+    if (document.documentElement.getBoundingClientRect().bottom + 50 < document.documentElement.clientHeight) {
+        
+    }
+}
+
+function tempFunc() {
     
-    console.log(document.documentElement.getBoundingClientRect().bottom)
-    console.log(document.documentElement.clientHeight)
+    console.log()
+    console.log()
+
+    
 }
 
 window.onscroll=tempFunc
