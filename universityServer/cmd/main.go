@@ -25,6 +25,12 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type jsonUniversity struct {
+	name string `json: name`
+	des  string `json: description`
+	img  string `json: imagePath`
+}
+
 func getUniversity(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		dataMap := make(map[string]string)
@@ -36,15 +42,26 @@ func getUniversity(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(dataMap)
-		result, err := usecase.ParseUniversityJson(dataMap["status"])
+		result, err := usecase.ParseUniversityJson(dataMap["order"])
 
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println(result)
+		var university jsonUniversity
+		university.name = result[0]
+		university.des = result[1]
+		university.img = result[2]
+
+		convertUniversity, err := json.Marshal(university)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		w.Write(convertUniversity)
 
 	}
 

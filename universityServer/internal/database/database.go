@@ -23,16 +23,23 @@ func ConnectDB() *pgx.Conn {
 	return conn
 }
 
-func GetUniversity(border int) {
+func GetUniversity(border int) ([]string, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
+	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+1))
+	result.Next()
 
-	result, _ := conn.Query(context.Background(), "SELECT uni_name, uni_des, uni_img FROM tempuni;")
+	universityArray := make([]string, 3)
+	if err != nil {
+		return universityArray, err
+	}
 
-	var p1, p2, p3 string
+	err = result.Scan(&universityArray[0], &universityArray[1], &universityArray[2])
 
-	result.Scan(&p1, &p2, &p3)
+	if err != nil {
+		return universityArray, err
+	}
 
-	fmt.Println(p1, p2, p3)
+	return universityArray, nil
 
 }
