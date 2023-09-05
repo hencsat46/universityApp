@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	pgx "github.com/jackc/pgx/v5"
@@ -22,22 +23,16 @@ func ConnectDB() *pgx.Conn {
 	return conn
 }
 
-type UniversityUnit struct {
-	name        string
-	description string
-	imgPath     string
-}
-
-func GetUniversity() (UniversityUnit, error) {
+func GetUniversity(border int) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
-	var unit UniversityUnit
-	result, err := conn.Query(context.Background(), "SELECT * FROM tempUni LIMIT 1")
 
-	if err == nil {
-		result.Scan(&unit.name, &unit.description, &unit.imgPath)
-		return unit, nil
-	}
+	result, _ := conn.Query(context.Background(), "SELECT uni_name, uni_des, uni_img FROM tempuni;")
 
-	return unit, err
+	var p1, p2, p3 string
+
+	result.Scan(&p1, &p2, &p3)
+
+	fmt.Println(p1, p2, p3)
+
 }

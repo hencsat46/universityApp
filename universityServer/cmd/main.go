@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	usecase "universityServer/internal/tools"
 
 	"github.com/rs/cors"
 )
@@ -12,6 +13,7 @@ import (
 func auth(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		dataMap := make(map[string]string)
+
 		err := json.NewDecoder(r.Body).Decode(&dataMap)
 
 		if err != nil {
@@ -21,6 +23,31 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(dataMap)
 
 	}
+}
+
+func getUniversity(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		dataMap := make(map[string]string)
+
+		err := json.NewDecoder(r.Body).Decode(&dataMap)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println(dataMap)
+		result, err := usecase.ParseUniversityJson(dataMap["status"])
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println(result)
+
+	}
+
 }
 
 func main() {
@@ -33,6 +60,7 @@ func main() {
 	})
 
 	r.HandleFunc("/", auth)
+	r.HandleFunc("/getUniversity", getUniversity)
 	handler := c.Handler(r)
 	fmt.Println("Server is listening...")
 	log.Fatal(http.ListenAndServe(":3000", handler))

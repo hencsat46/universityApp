@@ -54,11 +54,18 @@ async function getUniversity(url, data) {
         },
         body: JSON.stringify(data)
     })
+
+    const json = await response.json()
+    return json
 }
 
 function makeJsonUniversity() {
+    const universityCount = document.querySelectorAll(".uni-wrapper").length
+    
     if (document.documentElement.getBoundingClientRect().bottom + 50 < document.documentElement.clientHeight) {
-        
+        const universityOrder = universityCount - 2
+        const requestJson = {order: universityOrder}
+
     }
 }
 
@@ -70,5 +77,5 @@ function tempFunc() {
     
 }
 
-window.onscroll=tempFunc
+window.onscroll=makeJsonUniversity
 
