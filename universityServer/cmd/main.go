@@ -32,7 +32,7 @@ type jsonUniversity struct {
 }
 
 func getUniversity(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == "POST" {
 		dataMap := make(map[string]string)
 
 		err := json.NewDecoder(r.Body).Decode(&dataMap)

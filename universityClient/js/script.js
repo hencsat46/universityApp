@@ -47,7 +47,7 @@ async function postData(url, data) {
 
 async function getUniversity(url, data) {
     const response = await fetch(url, {
-        method: "GET",
+        method: "POST",
         mode: "cors",
         headers: {
             "Content-Type": "application/json"
@@ -63,7 +63,7 @@ function makeJsonUniversity() {
     const universityCount = document.querySelectorAll(".uni-wrapper").length
     console.log(document.documentElement.getBoundingClientRect().bottom)
     console.log(document.documentElement.clientHeight)
-    if (document.documentElement.getBoundingClientRect().bottom + 50 < document.documentElement.clientHeight) {
+    if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 50) {
         console.log("you reached the end of page")
         const universityOrder = universityCount - 2
         const requestJson = {order: universityOrder}
