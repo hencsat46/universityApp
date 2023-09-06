@@ -52,22 +52,24 @@ async function getUniversity(url, data) {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(data)
+        body: data
     })
-
     
     return response.json()
 }
 
-function makeJsonUniversity() {
+async function makeJsonUniversity() {
     const universityCount = document.querySelectorAll(".uni-wrapper").length
+
     console.log(document.documentElement.getBoundingClientRect().bottom)
     console.log(document.documentElement.clientHeight)
+
     if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 50) {
         console.log("you reached the end of page")
         const universityOrder = universityCount - 2
-        const requestJson = {order: universityOrder}
-        const response = getUniversity("http://localhost:3000/getUniversity", requestJson)
+        const requestJson = `{"order": ${universityOrder}}`
+        console.log(requestJson)
+        const response = await getUniversity("http://localhost:3000/getUniversity", requestJson)
         console.log(response)
     }
 }

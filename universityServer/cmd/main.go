@@ -25,18 +25,11 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type jsonUniversity struct {
-	name string `json: name`
-	des  string `json: description`
-	img  string `json: imagePath`
-}
-
 func getUniversity(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		dataMap := make(map[string]string)
+		dataMap := make(map[string]int)
 
 		err := json.NewDecoder(r.Body).Decode(&dataMap)
-
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -49,18 +42,18 @@ func getUniversity(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var university jsonUniversity
-		university.name = result[0]
-		university.des = result[1]
-		university.img = result[2]
-
-		convertUniversity, err := json.Marshal(university)
+		jsonUniversity := make(map[string]string)
+		jsonUniversity["name"] = result[0]
+		jsonUniversity["description"] = result[1]
+		jsonUniversity["imagePath"] = result[2]
+		convertUniversity, err := json.Marshal(jsonUniversity)
 
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		w.Write(convertUniversity)
 
 	}
