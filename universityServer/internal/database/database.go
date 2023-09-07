@@ -29,17 +29,40 @@ func GetUniversity(border int) ([]string, error) {
 	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+1))
 	result.Next()
 
-	universityArray := make([]string, 3)
+	universityArray := make([]string, 4)
 	if err != nil {
 		return universityArray, err
 	}
 
 	err = result.Scan(&universityArray[0], &universityArray[1], &universityArray[2])
+	result.Next()
+	universityArray[3], err = getRemain(conn)
+	if err != nil {
+		return universityArray, err
+	}
 
 	if err != nil {
 		return universityArray, err
 	}
 
 	return universityArray, nil
+
+}
+
+func getRemain(conn *pgx.Conn) (string, error) {
+	remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
+
+	if err != nil {
+		return "", err
+	}
+	var remainedString string
+	remained.Next()
+	err = remained.Scan(&remainedString)
+
+	if err != nil {
+		return "", err
+	}
+
+	return remainedString, nil
 
 }

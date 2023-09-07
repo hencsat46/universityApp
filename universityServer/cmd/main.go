@@ -46,6 +46,7 @@ func getUniversity(w http.ResponseWriter, r *http.Request) {
 		jsonUniversity["name"] = result[0]
 		jsonUniversity["description"] = result[1]
 		jsonUniversity["imagePath"] = result[2]
+		jsonUniversity["left"] = result[3]
 		convertUniversity, err := json.Marshal(jsonUniversity)
 
 		if err != nil {
