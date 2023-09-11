@@ -54,6 +54,28 @@ func GetUniversity(border int) ([]string, error) {
 
 }
 
+func SetUser(username string, password string, conn *pgx.Conn) (string, error) {
+	_, err := conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, password) VALUES ('%s', '%s')", username, password))
+	if err != nil {
+		return "-1", err
+	}
+
+	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT user_id FROM users WHERE username='%s'", username))
+
+	if err != nil {
+		return "-1", err
+	}
+
+	var id string
+	response.Next()
+	err = response.Scan(&id)
+
+	if err != nil {
+		return "-1", err
+	}
+	return id, nil
+}
+
 func getRemain(conn *pgx.Conn) (string, error) {
 	remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
 

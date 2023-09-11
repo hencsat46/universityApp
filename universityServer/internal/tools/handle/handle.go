@@ -1,8 +1,11 @@
 package handle
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 	database "universityServer/internal/database"
+	jwtToken "universityServer/internal/tools/jwt"
 )
 
 func ParseUniversityJson(number int) ([]string, error) {
@@ -13,5 +16,30 @@ func ParseUniversityJson(number int) ([]string, error) {
 	}
 
 	return result, nil
+
+}
+
+func SignUp(user map[string]string) (string, error) {
+	var username, password string
+	if user["username"] == "" || user["password"] == "" {
+		return "", errors.New("Incorrect login or password")
+	}
+
+	username = user["username"]
+	password = user["password"]
+	stringId, err := database.SetUser(username, password, database.ConnectDB())
+
+	if err != nil {
+		return "", err
+	}
+
+	id, err := strconv.Atoi(stringId)
+	token, err := jwtToken.CreateJWT(username, id)
+
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 
 }

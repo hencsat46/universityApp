@@ -20,9 +20,31 @@ func registration(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		fmt.Println(dataMap)
+
+		jwtToken, err := usecase.SignUp(dataMap)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		jsonMap := make(map[string]string)
+
+		jsonMap["token"] = jwtToken
+
+		jsonToken, err := json.Marshal(jsonMap)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(jsonToken)
 
 	}
+
 }
 
 func getUniversity(w http.ResponseWriter, r *http.Request) {
