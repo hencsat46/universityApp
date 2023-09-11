@@ -3,6 +3,7 @@ module universityServer
 go 1.21.0
 
 require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/rs/cors v1.9.0
 )

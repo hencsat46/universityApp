@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	usecase "universityServer/internal/tools"
+	usecase "universityServer/internal/tools/handle"
 
 	"github.com/rs/cors"
 )
 
-func auth(w http.ResponseWriter, r *http.Request) {
+func registration(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		dataMap := make(map[string]string)
 
@@ -70,7 +70,7 @@ func main() {
 		AllowedMethods:   []string{"GET", "DELETE", "POST", "PUT"},
 	})
 
-	r.HandleFunc("/", auth)
+	r.HandleFunc("/signup", registration)
 	r.HandleFunc("/getUniversity", getUniversity)
 	handler := c.Handler(r)
 	fmt.Println("Server is listening...")

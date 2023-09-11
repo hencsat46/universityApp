@@ -58,7 +58,10 @@ async function getUniversity(url, data) {
 }
 let remained = 1
 
+let flag = true
+
 async function makeJsonUniversity() {
+    flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
     if (remained <= universityCount - 2) {
         return
@@ -67,7 +70,7 @@ async function makeJsonUniversity() {
     // console.log(document.documentElement.getBoundingClientRect().bottom)
     // console.log(document.documentElement.clientHeight)
 
-    if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 50) {
+    if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 10) {
         const universityOrder = universityCount - 2
         const requestJson = `{"order": ${universityOrder}}`
         
@@ -78,6 +81,13 @@ async function makeJsonUniversity() {
             return
         }
         remained = await parseInt(response.left)
+    }
+    flag = true
+}
+
+function access() {
+    if (flag) {
+        makeJsonUniversity()
     }
 }
 
@@ -101,5 +111,5 @@ function makeUniversityElem(name, description, img) {
     newUniWrapper.append(newUniText)
 }
 
-window.onscroll=makeJsonUniversity
+window.onscroll=access
 

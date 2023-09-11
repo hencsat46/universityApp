@@ -35,6 +35,11 @@ func GetUniversity(border int) ([]string, error) {
 	}
 
 	err = result.Scan(&universityArray[0], &universityArray[1], &universityArray[2])
+
+	if err != nil {
+		return universityArray, err
+	}
+
 	result.Next()
 	universityArray[3], err = getRemain(conn)
 	if err != nil {
@@ -65,4 +70,21 @@ func getRemain(conn *pgx.Conn) (string, error) {
 
 	return remainedString, nil
 
+}
+
+func GetKey(conn *pgx.Conn) (string, error) {
+	key, err := conn.Query(context.Background(), "SELECT secretKey FROM jwtKey;")
+
+	if err != nil {
+		return "", err
+	}
+
+	key.Next()
+	var stringKey string
+	err = key.Scan(&stringKey)
+	if err != nil {
+		return "", err
+	}
+
+	return stringKey, nil
 }
