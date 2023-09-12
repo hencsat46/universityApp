@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	database "universityServer/internal/database"
-	jwtToken "universityServer/internal/tools/jwt"
+	jwtToken "universityServer/internal/pkg/jwt"
 )
 
 func ParseUniversityJson(number int) ([]string, error) {
@@ -27,7 +27,7 @@ func SignUp(user map[string]string) (string, error) {
 
 	username = user["username"]
 	password = user["password"]
-	stringId, err := database.SetUser(username, password, database.ConnectDB())
+	stringId, err := database.SetUser(username, password)
 
 	if err != nil {
 		return "", err

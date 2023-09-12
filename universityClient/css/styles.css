@@ -8,14 +8,14 @@
 
 body {
     min-height: 1080px;
-    background: rgb(42,231,199);
-    background: linear-gradient(90deg, rgba(42,231,199,1) 35%, rgba(0,212,255,1) 100%); 
+    background: #3a3939;
+    color: black;
     animation: 2s infinite alternate slidein;
     filter: blur(0px);
 }
 
 .wrapper {
-    max-width: 1100px;
+    max-width: 1300px;
     margin: 0 auto;
 }
 
@@ -146,14 +146,7 @@ button.sign-up {
     border-radius: 10px;
 }
 
-.uni-wrapper img {
-    display: block;
-    width: 500px;
-    height: 400px;
-    margin: 0 auto;
-}
-
-.uni-wrapper h2 {
+.text-container h2 {
     font-size: 50px;
     text-align: center;
 }
@@ -170,5 +163,21 @@ ul.ul li {
 
 .uni-text {
     font-size: 20px;
-    margin-top: 25px;
+    margin: 0 20px;
+}
+
+.info-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.info-container img {
+    height: 400px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px black;
+}
+
+.uni-wrapper {
+    background: white;
+    border-radius: 10px;
 }

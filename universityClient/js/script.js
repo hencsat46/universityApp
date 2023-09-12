@@ -1,7 +1,6 @@
 function clickButton(elem) {
     const elemName = elem.textContent.trim();
     const element = document.querySelectorAll('.form');
-    console.log(element)
     switch(elemName) {
         case "Войти":
             element[0].style.display = "block"
@@ -24,12 +23,20 @@ function closeForm(number) {
 }
 
 function sendData(elem) {
-    console.log()
     const dataArr = elem.parentElement.parentElement.getElementsByTagName("input")
-    const dataJson = {status: elem.className, username: dataArr[0].value, password: dataArr[1].value}
+    const dataJson = {username: dataArr[0].value, password: dataArr[1].value}
+    let response = undefined
+    switch (elem.className) {
+        case "sign-up":
+            response = postData("http://localhost:3000/signup", dataJson)
+            console.log(response)
+            break
+        case "sign-in":
+            //postData("http://localhost:3000/signin", dataJson)
+            console.log(dataJson)
+            break
+    }
     
-
-    postData("http://localhost:3000", dataJson)
 }
 
 async function postData(url, data) {
@@ -41,7 +48,7 @@ async function postData(url, data) {
         },
         body: JSON.stringify(data)
     })
-    console.log(await response.text())
+    return response.json()
 }
 
 async function getUniversity(url, data) {
@@ -66,9 +73,6 @@ async function makeJsonUniversity() {
     if (remained <= universityCount - 2) {
         return
     }
-    
-    // console.log(document.documentElement.getBoundingClientRect().bottom)
-    // console.log(document.documentElement.clientHeight)
 
     if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 10) {
         const universityOrder = universityCount - 2
