@@ -98,21 +98,27 @@ function access() {
 function makeUniversityElem(name, description, img) {
     const newLiElem = document.createElement("li")
     const newUniWrapper = document.createElement("div")
+    const newInfoContainer = document.createElement("div")
+    newInfoContainer.classList.add("info-container")
     newUniWrapper.classList.add("uni-wrapper")
     const newH2Elem = document.createElement("h2")
     const newImgElem = document.createElement("img")
     const newUniText = document.createElement("uni-text")
+    const newTextContainer = document.createElement("div")
+    newTextContainer.classList.add("text-container")
     newUniText.classList.add("uni-text")
     const ulClass = document.querySelector("ul.ul")
+    newInfoContainer.append(newImgElem)
+    ulClass.append(newLiElem)
+    newLiElem.append(newUniWrapper)
+    newUniWrapper.append(newInfoContainer)
+    newTextContainer.append(newH2Elem)
+    newTextContainer.append(newUniText)
+    newInfoContainer.append(newTextContainer)
     newH2Elem.innerText = name
     newImgElem.setAttribute("src", img)
     newImgElem.setAttribute("alt", "x")
     newUniText.innerText = description
-    ulClass.append(newLiElem)
-    newLiElem.append(newUniWrapper)
-    newUniWrapper.append(newH2Elem)
-    newUniWrapper.append(newImgElem)
-    newUniWrapper.append(newUniText)
 }
 
 window.onscroll=access

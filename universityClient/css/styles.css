@@ -20,7 +20,7 @@ body {
 }
 
 header {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -34,6 +34,14 @@ header {
 
 .university-choice:hover {
     text-decoration: underline;
+}
+
+.university-choice {
+    font-size: 19px;
+}
+
+.students-choice {
+    font-size: 19px;
 }
 
 .students-choice:hover {
@@ -147,7 +155,7 @@ button.sign-up {
 }
 
 .text-container h2 {
-    font-size: 50px;
+    font-size: 40px;
     text-align: center;
 }
 
@@ -159,6 +167,9 @@ ul {
 
 ul.ul li {
     margin-top: 50px;
+    box-shadow: 0 0 20px white;
+    border-radius: 20px;
+    overflow: hidden;
 }
 
 .uni-text {
@@ -172,12 +183,16 @@ ul.ul li {
 }
 
 .info-container img {
-    height: 400px;
+    width: 615px;
     border-radius: 20px;
-    box-shadow: 0 0 20px black;
 }
 
 .uni-wrapper {
     background: white;
-    border-radius: 10px;
+    padding: 25px 20px;
 }
+
+.text-container {
+    padding: 0 20px;
+}
+
