@@ -56,27 +56,14 @@ func registration(ctx echo.Context) error {
 		return err
 	}
 
-	jwtToken, err := usecase.SignUp(dataMap)
+	err = usecase.SignUp(dataMap)
 
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	jsonMap := make(map[string]string)
-
-	jsonMap["token"] = jwtToken
-
-	jsonToken, err := json.Marshal(jsonMap)
-
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	ctx.Response().Header().Set("Content-Type", "application/json")
-
-	return ctx.String(http.StatusOK, string(jsonToken))
+	return ctx.String(http.StatusOK, "Sign up ok")
 
 }
 
@@ -102,9 +89,28 @@ func createJwt(ctx echo.Context) error {
 	return ctx.String(200, jwtToken)
 }
 
+func signIn(ctx echo.Context) error {
+	dataMap := make(map[string]string)
+
+	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
+
+	if err != nil {
+		return err
+	}
+
+	err = usecase.SignIn(dataMap)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.String(http.StatusOK, "Success authorization")
+}
+
 func router(e *echo.Echo) {
 	e.POST("/getUniversity", getUniversity)
 	e.POST("/signup", registration)
+	e.POST("/signin", signIn)
 	e.GET("/check", createJwt)
 
 }

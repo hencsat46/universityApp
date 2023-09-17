@@ -3,9 +3,7 @@ package handle
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	database "universityServer/internal/database"
-	jwtToken "universityServer/internal/pkg/jwt"
 )
 
 func ParseUniversityJson(number int) ([]string, error) {
@@ -19,27 +17,46 @@ func ParseUniversityJson(number int) ([]string, error) {
 
 }
 
-func SignUp(user map[string]string) (string, error) {
-	var username, password string
-	if user["username"] == "" || user["password"] == "" {
-		return "", errors.New("Incorrect login or password")
+func checkEmpty(userData map[string]string) (bool, string, string) {
+	if userData["username"] == "" || userData["password"] == "" {
+		return false, "", ""
 	}
 
-	username = user["username"]
-	password = user["password"]
-	stringId, err := database.SetUser(username, password)
+	return true, userData["username"], userData["password"]
+}
+
+func SignIn(user map[string]string) error {
+
+	check, username, password := checkEmpty(user)
+
+	if !check {
+		return errors.New("Username or password is empty")
+	}
+
+	err := database.Authorization(username, password)
 
 	if err != nil {
-		return "", err
+		return nil
 	}
 
-	id, err := strconv.Atoi(stringId)
-	token, err := jwtToken.CreateJWT(username, id)
+	return nil
+
+}
+
+func SignUp(user map[string]string) error {
+
+	check, username, password := checkEmpty(user)
+
+	if !check {
+		return errors.New("Username or password is empty")
+	}
+
+	err := database.SetUser(username, password)
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return token, nil
+	return nil
 
 }

@@ -32,7 +32,7 @@ function sendData(elem) {
             console.log(response)
             break
         case "sign-in":
-            //postData("http://localhost:3000/signin", dataJson)
+            postData("http://localhost:3000/signin", dataJson)
             console.log(dataJson)
             break
     }

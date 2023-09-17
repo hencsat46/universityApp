@@ -83,29 +83,38 @@ func getRemain(conn *pgx.Conn) (string, error) {
 	return remainedString, nil
 
 }
-func SetUser(username string, password string) (string, error) {
+func SetUser(username string, password string) error {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
 	response, err := conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd) VALUES ('%s', '%s')", username, password))
+
 	if err != nil {
-		return "-1", err
+		return err
 	}
+	defer response.Close()
+
+	return nil
+}
+
+func Authorization(username string, password string) error {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+
+	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT username, passwd FROM users WHERE username = '%s' AND passwd = '%s'", username, password))
+
+	if err != nil {
+		return err
+	}
+
 	response.Next()
+	var nameData, passData string
 
-	response, err = conn.Query(context.Background(), fmt.Sprintf("SELECT user_id FROM users WHERE username='%s'", username))
+	response.Scan(&nameData, &passData)
 
-	if err != nil {
-		return "-1", err
-	}
+	fmt.Println(nameData, passData)
 
-	var id string
-	response.Next()
-	err = response.Scan(&id)
+	return nil
 
-	if err != nil {
-		return "-1", err
-	}
-	return id, nil
 }
 
 func GetKey(conn *pgx.Conn) (string, error) {
