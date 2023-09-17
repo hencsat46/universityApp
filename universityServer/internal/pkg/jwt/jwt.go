@@ -2,7 +2,6 @@ package jwtActions
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 	db "universityServer/internal/database"
@@ -13,16 +12,16 @@ import (
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	string
-	int
+	username string
+	id       string
 	int64
 }
 
-func CreateJWT(username string, id int) (string, error) {
+func CreateJWT(username string, id string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Second * 10).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    username,
 		},
@@ -42,7 +41,6 @@ func CreateJWT(username string, id int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(tokenString)
 	return tokenString, nil
 
 }
@@ -56,33 +54,38 @@ func getKey() (string, error) {
 	return key, nil
 }
 
-func ValidationJWT(innerFunc func(ctx echo.Context)) func(ctx echo.Context) {
-	return func(c echo.Context) {
+func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx echo.Context) error) echo.HandlerFunc {
+	return echo.HandlerFunc(func(c echo.Context) error {
 		if c.Request().Header["Token"] != nil {
 			token, err := jwt.Parse(c.Request().Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
 				_, ok := t.Method.(*jwt.SigningMethodHMAC)
 				if !ok {
-					c.String(http.StatusUnauthorized, "not authorized")
-					return nil, errors.New("Not authorized")
+					c.String(http.StatusUnauthorized, "Токен говно")
+					return nil, errors.New("not authorized")
 				}
 				key, err := getKey()
 				if err != nil {
+					c.String(200, "aaaaaa")
 					return nil, err
 				}
 
-				return key, nil
+				return []byte(key), nil
 
 			})
 
 			if err != nil {
-				c.String(http.StatusUnauthorized, "not authorized")
+				c.String(200, "Неверный токен")
+				return err
 			}
 
 			if token.Valid {
 				innerFunc(c)
+				return nil
 			}
+			return nil
 		} else {
-			c.String(http.StatusUnauthorized, "not authorized")
+			giveToken(c)
+			return nil
 		}
-	}
+	})
 }

@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -83,10 +84,43 @@ func getRemain(conn *pgx.Conn) (string, error) {
 	return remainedString, nil
 
 }
+
+func GetId(username string) (string, error) {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+
+	var userId string
+
+	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT user_id FROM users WHERE username = '%s';", username))
+	if err != nil {
+		return "", err
+	}
+	response.Next()
+	err = response.Scan(&userId)
+	if err != nil {
+		return "", err
+	}
+	return userId, nil
+}
+
 func SetUser(username string, password string) error {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
-	response, err := conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd) VALUES ('%s', '%s')", username, password))
+	var count string
+	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM checkUser('%s');", username))
+
+	if err != nil {
+		return err
+	}
+
+	response.Next()
+	response.Scan(&count)
+	if count != "-1" {
+		return errors.New("this user already exists")
+	}
+	response.Close()
+
+	response, err = conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd) VALUES ('%s', '%s')", username, password))
 
 	if err != nil {
 		return err
@@ -100,7 +134,7 @@ func Authorization(username string, password string) error {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
 
-	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT username, passwd FROM users WHERE username = '%s' AND passwd = '%s'", username, password))
+	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM login('%s', '%s');", username, password))
 
 	if err != nil {
 		return err
@@ -123,6 +157,7 @@ func GetKey(conn *pgx.Conn) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer key.Close()
 
 	key.Next()
 	var stringKey string

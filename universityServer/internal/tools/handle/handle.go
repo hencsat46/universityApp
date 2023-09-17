@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	database "universityServer/internal/database"
+	jwtToken "universityServer/internal/pkg/jwt"
 )
 
 func ParseUniversityJson(number int) ([]string, error) {
@@ -25,21 +26,31 @@ func checkEmpty(userData map[string]string) (bool, string, string) {
 	return true, userData["username"], userData["password"]
 }
 
-func SignIn(user map[string]string) error {
+func SignIn(user map[string]string) (string, error) {
 
 	check, username, password := checkEmpty(user)
 
 	if !check {
-		return errors.New("Username or password is empty")
+		return "", errors.New("username or password is empty")
 	}
 
 	err := database.Authorization(username, password)
 
 	if err != nil {
-		return nil
+		return "", nil
 	}
 
-	return nil
+	userId, err := database.GetId(username)
+	if err != nil {
+		return "", nil
+	}
+
+	newToken, err := jwtToken.CreateJWT(username, userId)
+	if err != nil {
+		return "", err
+	}
+
+	return newToken, nil
 
 }
 
@@ -48,7 +59,7 @@ func SignUp(user map[string]string) error {
 	check, username, password := checkEmpty(user)
 
 	if !check {
-		return errors.New("Username or password is empty")
+		return errors.New("username or password is empty")
 	}
 
 	err := database.SetUser(username, password)

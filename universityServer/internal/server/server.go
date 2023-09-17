@@ -80,7 +80,7 @@ func Run() {
 }
 
 func createJwt(ctx echo.Context) error {
-	jwtToken, err := jwt.CreateJWT("ilya", 12)
+	jwtToken, err := jwt.CreateJWT("ilya", "12")
 
 	if err != nil {
 		return err
@@ -98,19 +98,32 @@ func signIn(ctx echo.Context) error {
 		return err
 	}
 
-	err = usecase.SignIn(dataMap)
+	token, err := usecase.SignIn(dataMap)
 
 	if err != nil {
 		return err
 	}
 
-	return ctx.String(http.StatusOK, "Success authorization")
+	jsonMap := make(map[string]string)
+	jsonMap["Token"] = token
+	jsonMap["Status"] = "ok"
+
+	jsonString, err := json.Marshal(jsonMap)
+	if err != nil {
+		return err
+	}
+
+	return ctx.String(http.StatusOK, string(jsonString))
 }
 
 func router(e *echo.Echo) {
 	e.POST("/getUniversity", getUniversity)
 	e.POST("/signup", registration)
-	e.POST("/signin", signIn)
+	e.POST("/token", jwt.ValidationJWT(tokenOk, signIn))
 	e.GET("/check", createJwt)
 
+}
+
+func tokenOk(ctx echo.Context) error {
+	return ctx.String(http.StatusOK, "Молодец, правильный токен")
 }
