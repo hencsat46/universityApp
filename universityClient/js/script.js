@@ -77,9 +77,9 @@ async function makeJsonUniversity() {
     if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 10) {
         const universityOrder = universityCount - 2
         const requestJson = `{"order": ${universityOrder}}`
-        
+        console.log(requestJson)
         const response = await getUniversity("http://localhost:3000/getUniversity", requestJson)
-        console.log(response)
+        
         makeUniversityElem(response.name, response.description, response.imagePath)
         if (!response.left) {
             return

@@ -26,9 +26,15 @@ func ConnectDB() *pgx.Conn {
 func GetUniversity(border int) ([]string, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
+
 	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+1))
 	result.Next()
-
+	defer func() {
+		if err == nil {
+			return
+		}
+		result.Close()
+	}()
 	universityArray := make([]string, 4)
 	if err != nil {
 		return universityArray, err
@@ -40,7 +46,7 @@ func GetUniversity(border int) ([]string, error) {
 		return universityArray, err
 	}
 
-	result.Next()
+	result.Close()
 	universityArray[3], err = getRemain(conn)
 	if err != nil {
 		return universityArray, err
@@ -54,6 +60,29 @@ func GetUniversity(border int) ([]string, error) {
 
 }
 
+func getRemain(conn *pgx.Conn) (string, error) {
+	remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
+	defer func() {
+		if err == nil {
+			return
+		}
+		remained.Close()
+	}()
+
+	if err != nil {
+		return "", err
+	}
+	var remainedString string
+	remained.Next()
+	err = remained.Scan(&remainedString)
+
+	if err != nil {
+		return "", err
+	}
+
+	return remainedString, nil
+
+}
 func SetUser(username string, password string) (string, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
@@ -77,24 +106,6 @@ func SetUser(username string, password string) (string, error) {
 		return "-1", err
 	}
 	return id, nil
-}
-
-func getRemain(conn *pgx.Conn) (string, error) {
-	remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
-
-	if err != nil {
-		return "", err
-	}
-	var remainedString string
-	remained.Next()
-	err = remained.Scan(&remainedString)
-
-	if err != nil {
-		return "", err
-	}
-
-	return remainedString, nil
-
 }
 
 func GetKey(conn *pgx.Conn) (string, error) {
