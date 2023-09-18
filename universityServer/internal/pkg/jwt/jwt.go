@@ -2,7 +2,7 @@ package jwtActions
 
 import (
 	"errors"
-	"net/http"
+	"fmt"
 	"time"
 	db "universityServer/internal/database"
 
@@ -60,12 +60,12 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			token, err := jwt.Parse(c.Request().Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
 				_, ok := t.Method.(*jwt.SigningMethodHMAC)
 				if !ok {
-					c.String(http.StatusUnauthorized, "Токен говно")
+					fmt.Println("Токен говно")
 					return nil, errors.New("not authorized")
 				}
 				key, err := getKey()
 				if err != nil {
-					c.String(200, "aaaaaa")
+					fmt.Println("ошибка с парсом")
 					return nil, err
 				}
 
@@ -74,7 +74,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			})
 
 			if err != nil {
-				c.String(200, "Неверный токен")
+				fmt.Println("Неверный токен")
 				return err
 			}
 
@@ -85,6 +85,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			return nil
 		} else {
 			giveToken(c)
+			fmt.Println("give token")
 			return nil
 		}
 	})

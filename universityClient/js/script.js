@@ -28,11 +28,11 @@ function sendData(elem) {
     let response = undefined
     switch (elem.className) {
         case "sign-up":
-            response = postData("http://localhost:3000/signup", dataJson)
-            console.log(response)
+            postData("http://localhost:3000/signup", dataJson)
+            //console.log(response)
             break
         case "sign-in":
-            postData("http://localhost:3000/token", dataJson)
+            signIn("http://localhost:3000/token", dataJson)
             console.log(dataJson)
             break
     }
@@ -54,31 +54,66 @@ function getCookie() {
     return null
 }
 
-async function postData(url, data) {
+function setCookie(jsonCookie) {
+    // if ('Token' in jsonCookie) {
+    //     console.log("PENIS!!!")
+    //     return
+    // }
 
-    let tokenName, tokenValue
-    const cookieArr = getCookie()
-    if (cookieArr != null) {
-        tokenValue = cookieArr[1]
-    } else {
-        tokenValue = null
-    }
+    console.log(jsonCookie)
 
+    // const value = async () => {
+    //     return await jsonCookie
+    // }
+
+    // console.log(value())
+    // const stringJwt = jsonCookie["Token"]
+    // console.log(stringJwt)
+    //document.cookie = `Token=${stringJwt}; expires=${new Date(2023, 8, 19).toUTCString()}; SameSite=Strict`
+    //console.log(document.cookie)
+}
+
+function signIn(url, data) {
+    const response = signPost(url, data)
+    console.log(response)
+    setCookie(response)
+    
+
+}
+
+async function signPost(url, data) {
     const request = new Request(url, {
         method: "POST",
         mode: "cors",
         headers: {
             "Content-Type": "application/json",
-            "Token": tokenValue
+            "Token": getCookie()
         },
         body: JSON.stringify(data)
     })
 
-    console.log(request)
+    const response = await fetch(request)
+    
+    return response.json().then((value) => {
+        return value.Token
+    })
+
+}
+
+async function postData(url, data) {
+
+    const request = new Request(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
 
     const response = await fetch(request)
-    console.log(response)
-    return response.json()
+    console.log(response.json())
+    //return response.json()
 }
 
 async function getUniversity(url, data) {

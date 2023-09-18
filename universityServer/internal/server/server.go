@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	cookie "universityServer/internal/pkg/cookieManager"
 	jwt "universityServer/internal/pkg/jwt"
 	usecase "universityServer/internal/tools/handle"
 
@@ -94,7 +93,7 @@ func signIn(ctx echo.Context) error {
 	dataMap := make(map[string]string)
 
 	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-
+	fmt.Println(dataMap)
 	if err != nil {
 		return err
 	}
@@ -109,17 +108,12 @@ func signIn(ctx echo.Context) error {
 
 	jsonMap := make(map[string]string)
 	jsonMap["Token"] = token
-	jsonMap["Status"] = "ok"
 
 	jsonString, err := json.Marshal(jsonMap)
 	if err != nil {
 		return err
 	}
-	c := cookie.CreateCookie("Token", token, expTime)
-	fmt.Println(c)
-	fmt.Println(jsonString)
-	ctx.SetCookie(&c)
-	//return ctx.String(200, "")
+
 	return ctx.String(http.StatusOK, string(jsonString))
 }
 
