@@ -26,7 +26,7 @@ func checkEmpty(userData map[string]string) (bool, string, string) {
 	return true, userData["username"], userData["password"]
 }
 
-func SignIn(user map[string]string) (string, error) {
+func SignIn(user map[string]string, expTime int) (string, error) {
 
 	check, username, password := checkEmpty(user)
 
@@ -45,7 +45,7 @@ func SignIn(user map[string]string) (string, error) {
 		return "", nil
 	}
 
-	newToken, err := jwtToken.CreateJWT(username, userId)
+	newToken, err := jwtToken.CreateJWT(username, userId, expTime)
 	if err != nil {
 		return "", err
 	}

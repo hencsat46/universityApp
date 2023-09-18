@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	cookie "universityServer/internal/pkg/cookieManager"
 	jwt "universityServer/internal/pkg/jwt"
 	usecase "universityServer/internal/tools/handle"
 
@@ -79,15 +80,15 @@ func Run() {
 	e.Start(":3000")
 }
 
-func createJwt(ctx echo.Context) error {
-	jwtToken, err := jwt.CreateJWT("ilya", "12")
+// func createJwt(ctx echo.Context) error {
+// 	jwtToken, err := jwt.CreateJWT("ilya", "12")
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return ctx.String(200, jwtToken)
-}
+// 	return ctx.String(200, jwtToken)
+// }
 
 func signIn(ctx echo.Context) error {
 	dataMap := make(map[string]string)
@@ -98,7 +99,9 @@ func signIn(ctx echo.Context) error {
 		return err
 	}
 
-	token, err := usecase.SignIn(dataMap)
+	expTime := 2
+
+	token, err := usecase.SignIn(dataMap, expTime)
 
 	if err != nil {
 		return err
@@ -112,7 +115,11 @@ func signIn(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-
+	c := cookie.CreateCookie("Token", token, expTime)
+	fmt.Println(c)
+	fmt.Println(jsonString)
+	ctx.SetCookie(&c)
+	//return ctx.String(200, "")
 	return ctx.String(http.StatusOK, string(jsonString))
 }
 
@@ -120,10 +127,17 @@ func router(e *echo.Echo) {
 	e.POST("/getUniversity", getUniversity)
 	e.POST("/signup", registration)
 	e.POST("/token", jwt.ValidationJWT(tokenOk, signIn))
-	e.GET("/check", createJwt)
+	//e.GET("/check", createJwt)
 
 }
 
 func tokenOk(ctx echo.Context) error {
-	return ctx.String(http.StatusOK, "Молодец, правильный токен")
+	fmt.Println("hello")
+	return nil
 }
+
+// func expiredToken(ctx echo.Context, err error) error {
+// 	if err.Error() == "Token is expired" {
+
+// 	}
+// }

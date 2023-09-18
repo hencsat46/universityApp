@@ -32,22 +32,52 @@ function sendData(elem) {
             console.log(response)
             break
         case "sign-in":
-            postData("http://localhost:3000/signin", dataJson)
+            postData("http://localhost:3000/token", dataJson)
             console.log(dataJson)
             break
     }
     
 }
 
+function getCookie() {
+    const cookies = document.cookie
+    let cookieArr = cookies.split(';')
+    const length = cookieArr.length
+    for (let i = 0; i < length; i++) {
+        cookieArr[i] = cookieArr[i].trim()
+    }
+
+    for (let i = 0; i < length; i++) {
+        const tempArr = cookieArr[i].split('=')
+        if (tempArr[0] == 'Token') return tempArr[1]
+    }
+    return null
+}
+
 async function postData(url, data) {
-    const response = await fetch(url, {
+
+    let tokenName, tokenValue
+    const cookieArr = getCookie()
+    if (cookieArr != null) {
+        tokenValue = cookieArr[1]
+    } else {
+        tokenValue = null
+    }
+
+    const request = new Request(url, {
         method: "POST",
         mode: "cors",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Token": tokenValue
         },
         body: JSON.stringify(data)
     })
+
+    console.log(request)
+
+    const response = await fetch(request)
+    console.log(response)
     return response.json()
 }
 
