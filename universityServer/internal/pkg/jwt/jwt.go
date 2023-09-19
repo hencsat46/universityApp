@@ -21,7 +21,7 @@ func CreateJWT(username string, id string, expTime int) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Second * time.Duration(expTime)).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(expTime)).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    username,
 		},
@@ -54,7 +54,7 @@ func getKey() (string, error) {
 	return key, nil
 }
 
-func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx echo.Context) error) echo.HandlerFunc {
+func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx echo.Context) error, inputError func(ctx echo.Context, errorHandler error) error) echo.HandlerFunc {
 	return echo.HandlerFunc(func(c echo.Context) error {
 		if c.Request().Header["Token"] != nil && c.Request().Header["Token"][0] != "null" {
 			token, err := jwt.Parse(c.Request().Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
@@ -74,7 +74,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			})
 
 			if err != nil {
-				fmt.Println("Время истекло")
+				inputError(c, err)
 				return err
 			}
 

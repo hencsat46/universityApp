@@ -120,9 +120,14 @@ func signIn(ctx echo.Context) error {
 func router(e *echo.Echo) {
 	e.POST("/getUniversity", getUniversity)
 	e.POST("/signup", registration)
-	e.POST("/token", jwt.ValidationJWT(tokenOk, signIn))
+	e.POST("/token", jwt.ValidationJWT(tokenOk, signIn, errorIndicator))
 	//e.GET("/check", createJwt)
 
+}
+
+func errorIndicator(ctx echo.Context, err error) error {
+	usecase.ErrorHandler(ctx, err)
+	return nil
 }
 
 func tokenOk(ctx echo.Context) error {
