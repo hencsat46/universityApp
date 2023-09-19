@@ -54,31 +54,21 @@ function getCookie() {
     return null
 }
 
-function setCookie(jsonCookie) {
-    // if ('Token' in jsonCookie) {
-    //     console.log("PENIS!!!")
-    //     return
-    // }
+function setCookie(stringToken) {
+    console.log(stringToken)
 
-    console.log(jsonCookie)
-
-    // const value = async () => {
-    //     return await jsonCookie
-    // }
-
-    // console.log(value())
-    // const stringJwt = jsonCookie["Token"]
-    // console.log(stringJwt)
-    //document.cookie = `Token=${stringJwt}; expires=${new Date(2023, 8, 19).toUTCString()}; SameSite=Strict`
-    //console.log(document.cookie)
+    document.cookie = `Token=${stringToken}`
+    console.log(document.cookie)
 }
 
 function signIn(url, data) {
     const response = signPost(url, data)
-    console.log(response)
-    setCookie(response)
-    
-
+    response.then(value => {return value}).then(value => {
+        if ('Token' in value) {
+            console.log("PENIS!!!")
+            setCookie(value.Token)
+        }
+    })
 }
 
 async function signPost(url, data) {
@@ -92,11 +82,8 @@ async function signPost(url, data) {
         body: JSON.stringify(data)
     })
 
-    const response = await fetch(request)
-    
-    return response.json().then((value) => {
-        return value.Token
-    })
+    const response = await (await fetch(request)).json()
+    return response
 
 }
 

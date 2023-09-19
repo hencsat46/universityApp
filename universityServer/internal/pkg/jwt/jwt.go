@@ -74,7 +74,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			})
 
 			if err != nil {
-				fmt.Println("Неверный токен")
+				fmt.Println("Время истекло")
 				return err
 			}
 
