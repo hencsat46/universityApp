@@ -1,7 +1,7 @@
 package main
 
 import (
-	app "universityServer/internal/server"
+	app "universityServer/internal/api/server"
 )
 
 func main() {

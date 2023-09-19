@@ -7,11 +7,11 @@
 }
 
 body {
-    min-height: 1080px;
     background: #3a3939;
     color: black;
     animation: 2s infinite alternate slidein;
     filter: blur(0px);
+    min-height: 100%;
 }
 
 .wrapper {
@@ -20,9 +20,7 @@ body {
 }
 
 header {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     padding: 20px 100px;
     background: black;
@@ -97,11 +95,25 @@ button.login-btn:hover {
     font-weight: 700;
 }
 
+.form-bg {
+    
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.no-scroll {
+    overflow-y: hidden;
+}
+
 .form {
     display: none;
     transition: .3s;
-    position: fixed;
-    top: 30%;
+    position: absolute;
+    top: 50%;
     left: 50%;
     width: 280px;
     height: 220px;
@@ -194,5 +206,74 @@ ul.ul li {
 
 .text-container {
     padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+.sub-docs {
+    transition: .3s;
+    margin-top: 13px;
+    width: 250px;
+    height: 50px;
+    cursor: pointer;
+    background: transparent;
+    border: 4px solid black;
+    border-radius: 10px;
+    font-size: 20px;
+    color: black;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sub-docs:hover {
+    background: black;
+    color: white;
+}
+
+.docs-form {
+    display: flex;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+    width: 500px;
+    height: 300px;
+    background: white;
+    border-radius: 10px;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 20px;
+    
+}
+
+.docs-text {
+    font-size: 23px;
+    margin-bottom: 40px;
+}
+.docs-input {
+    width: 200px;
+    margin: 20px 0;
+    height: 30px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.docs-send {
+    height: 50px;
+    width: 150px;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 20px;
+    border: black solid 5px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.docs-send:hover {
+    background: black;
+    color: white
+}

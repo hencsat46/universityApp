@@ -8,70 +8,29 @@
     <link href="https://fonts.cdnfonts.com/css/open-sans" rel="stylesheet">    <title>Document</title>
 </head>
 <body>
-    <div class="form">
-        <button class="close-form" onclick="closeForm(0)">
-            <img src="img/close.png" alt="x">
-        </button>
-        <div class="input-box">
-            <label>Логин</label><br/>
-            <input type="text">
+    <header>
+        <div class="links">
+            <a href="#" class="university-choice">Университеты</a>
+            <a href="#" class="students-choice">Список студентов</a>
         </div>
-        <div class="input-box">
-            <label>Пароль</label><br/>
-            <input type="password">
+        <div class="sign-btns">
+            <div class="sign-up">
+                <button class="sign-up-btn" onclick="clickButton(this)">
+                    Зарегистрироваться
+                </button>
+            </div>
+            <div class="login">
+                <button class="login-btn" onclick="clickButton(this)">
+                    Войти
+                </button>
+            </div>
         </div>
-        <div class="button-wrapper">
-            <button class="sign-in" onclick="sendData(this)">
-                Войти
-            </button>
-        </div>
-    </div>
-    <div class="form">
-        <button class="close-form" onclick="closeForm(1)">
-            <img src="img/close.png" alt="x">
-        </button>
-        <div class="input-box">
-            <label>Логин</label><br/>
-            <input type="text">
-        </div>
-        <div class="input-box">
-            <label>Пароль</label><br/>
-            <input type="password">
-        </div>
-        <div class="button-wrapper">
-            <button class="sign-up" onclick="sendData(this)">
-                Зарегистрироваться
-            </button>
-        </div>
-    </div>
+    </header>
     <div class="wrapper">
-        <header>
-            <div class="links">
-                <a href="#" class="university-choice">Университеты</a>
-                <a href="#" class="students-choice">Список студентов</a>
-            </div>
-            <div class="sign-btns">
-                <div class="sign-up">
-                    <button class="sign-up-btn" onclick="clickButton(this)">
-                        Зарегистрироваться
-                    </button>
-                </div>
-                <div class="login">
-                    <button class="login-btn" onclick="clickButton(this)">
-                        Войти
-                    </button>
-                </div>
-            </div>
-        </header>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+        
         <ul class="ul">
             <li>
-                <div class="uni-wrapper">
+                <div class="uni-wrapper" id="0">
                     <div class="info-container">
                         <img src="img/mgu.jpg" alt="x">
                         <div class="text-container">
@@ -79,12 +38,13 @@
                             <div class="uni-text">
                                 Московский государственный университет имени М. В. Ломоносова (с 1755 по 1917 год — Императорский Московский университет) — один из старейших и крупнейших классических университетов России, один из центров российской науки и культуры, расположенный в Москве. C 1940 года носит имя Михаила Васильевича Ломоносова. Полное название — федеральное государственное бюджетное образовательное учреждение высшего образования «Московский государственный университет имени М. В. Ломоносова». 
                             </div>
+                            <button class="sub-docs" onclick="setUniversity(this)">Подать документы</button>
                         </div>
                     </div>
                 </div>
             </li>
             <li>
-                <div class="uni-wrapper">
+                <div class="uni-wrapper" id="1">
                     <div class="info-container">
                         <img src="img/mpu.jpg" alt="x">
                         <div class="text-container">
@@ -92,11 +52,62 @@
                             <div class="uni-text">
                                 Московский политехнический университет — высшее учебное заведение в Москве. В соответствии с приказом Министерства образования и науки Российской Федерации от 21 марта 2016 года создан путём реорганизации в форме слияния двух российских вузов — МГУП им. Ивана Фёдорова и Университета машиностроения (МАМИ). Организационно-правовая форма — федеральное государственное автономное образовательное учреждение высшего образования. 
                             </div>
+                            <button class="sub-docs" onclick="setUniversity(this)">
+                                <div class="btn-text">Подать документы</div>
+                            </button>
                         </div>
                     </div>
                 </div>
             </li>
         </ul>
+        <div class="form-bg">
+            <div class="docs-form">
+                <button class="close-form" onclick="closeForm(0)">
+                    <img src="img/close.png" alt="x">
+                </button>
+                <div class="docs-text">
+                    Введите количество баллов
+                </div>
+                <input type="text" class="docs-input">
+                <button class="docs-send">Отправить</button>
+            </div>
+            <div class="form">
+                <button class="close-form" onclick="closeForm(0)">
+                    <img src="img/close.png" alt="x">
+                </button>
+                <div class="input-box">
+                    <label>Логин</label><br/>
+                    <input type="text">
+                </div>
+                <div class="input-box">
+                    <label>Пароль</label><br/>
+                    <input type="password">
+                </div>
+                <div class="button-wrapper">
+                    <button class="sign-in" onclick="sendData(this)">
+                        Войти
+                    </button>
+                </div>
+            </div>
+            <div class="form">
+                <button class="close-form" onclick="closeForm(1)">
+                    <img src="img/close.png" alt="x">
+                </button>
+                <div class="input-box">
+                    <label>Логин</label><br/>
+                    <input type="text">
+                </div>
+                <div class="input-box">
+                    <label>Пароль</label><br/>
+                    <input type="password">
+                </div>
+                <div class="button-wrapper">
+                    <button class="sign-up" onclick="sendData(this)">
+                        Зарегистрироваться
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>    
 </body>
 </html>

@@ -1,25 +1,31 @@
 function clickButton(elem) {
     const elemName = elem.textContent.trim();
     const element = document.querySelectorAll('.form');
+    const formBg = document.querySelector('.form-bg')
+    formBg.style.display = "block"
+    document.body.classList.add('no-scroll')
     switch(elemName) {
         case "Войти":
             element[0].style.display = "block"
             element[1].style.display = "none"
-            document.querySelector("ul.ul").style.filter = "blur(3px)"
+            //document.querySelector("ul.ul").style.filter = "blur(3px)"
             break;
         case "Зарегистрироваться":
             element[0].style.display = "none"
             element[1].style.display = "block"
-            document.querySelector("ul.ul").style.filter = "blur(3px)"
             break;
     }
     
 }
 
-function closeForm(number) {
-    const element = document.querySelectorAll('.form');
-    element[number].style.display = "none"
-    document.querySelector("ul.ul").style.filter = "blur(0px)"
+function closeForm() {
+    document.body.classList.remove('no-scroll')
+    const formBg = document.querySelector('.form-bg')
+    formBg.style.display = "none"
+}
+
+function showDocs(elem) {
+
 }
 
 function sendData(elem) {
@@ -63,10 +69,12 @@ function setCookie(stringToken) {
 
 function signIn(url, data) {
     const response = signPost(url, data)
+    console.log(response, "PENIS")
     response.then(value => {return value}).then(value => {
         if ('Token' in value) {
             console.log("PENIS!!!")
             setCookie(value.Token)
+            
         }
     })
 }
@@ -82,8 +90,8 @@ async function signPost(url, data) {
         body: JSON.stringify(data)
     })
 
-    const response = await (await fetch(request)).json()
-    return response
+    const response = await fetch(request)
+    return response.json()
 
 }
 
@@ -119,6 +127,22 @@ let remained = 1
 
 let flag = true
 
+let universityId = 0
+
+function setUniversity(element) {
+    const docsForm = document.querySelector(".docs-form")
+    docsForm.style.display = "flex"
+    docsForm.style.position = "absolute"
+    docsForm.style.left = "50%"
+    docsForm.style.top = "50%"
+    docsForm.style.transform = "translate(-50%, -50%)"
+    const formBg = document.querySelector('.form-bg')
+    formBg.style.display = "block"
+    universityId = element.parentNode.parentNode.parentNode.getAttribute('id')
+    console.log(universityId)
+}
+
+
 async function makeJsonUniversity() {
     flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
@@ -153,10 +177,17 @@ function makeUniversityElem(name, description, img) {
     const newInfoContainer = document.createElement("div")
     newInfoContainer.classList.add("info-container")
     newUniWrapper.classList.add("uni-wrapper")
+    newUniWrapper.setAttribute("id", document.querySelectorAll(".uni-wrapper").length)
     const newH2Elem = document.createElement("h2")
     const newImgElem = document.createElement("img")
     const newUniText = document.createElement("uni-text")
     const newTextContainer = document.createElement("div")
+    const newButtonElem = document.createElement("button")
+    newButtonElem.classList.add("sub-docs")
+    const newTextElem = document.createElement("div")
+    newTextElem.classList.add("btn-text")
+    newTextElem.innerHTML = "Подать документы"
+    newButtonElem.append(newTextElem)
     newTextContainer.classList.add("text-container")
     newUniText.classList.add("uni-text")
     const ulClass = document.querySelector("ul.ul")
@@ -166,6 +197,7 @@ function makeUniversityElem(name, description, img) {
     newUniWrapper.append(newInfoContainer)
     newTextContainer.append(newH2Elem)
     newTextContainer.append(newUniText)
+    newTextContainer.append(newButtonElem)
     newInfoContainer.append(newTextContainer)
     newH2Elem.innerText = name
     newImgElem.setAttribute("src", img)
@@ -173,5 +205,8 @@ function makeUniversityElem(name, description, img) {
     newUniText.innerText = description
 }
 
+
+
 window.onscroll=access
 
+//function 

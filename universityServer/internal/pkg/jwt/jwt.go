@@ -54,7 +54,7 @@ func getKey() (string, error) {
 	return key, nil
 }
 
-func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx echo.Context) error, inputError func(ctx echo.Context, errorHandler error) error) echo.HandlerFunc {
+func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 	return echo.HandlerFunc(func(c echo.Context) error {
 		if c.Request().Header["Token"] != nil && c.Request().Header["Token"][0] != "null" {
 			token, err := jwt.Parse(c.Request().Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
@@ -65,7 +65,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 				}
 				key, err := getKey()
 				if err != nil {
-					fmt.Println("ошибка с парсом")
+					fmt.Println(err)
 					return nil, err
 				}
 
@@ -74,7 +74,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			})
 
 			if err != nil {
-				inputError(c, err)
+				fmt.Println(err, "хуйня")
 				return err
 			}
 
@@ -84,8 +84,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error, giveToken func(ctx ec
 			}
 			return nil
 		} else {
-			giveToken(c)
-			fmt.Println("give token")
+			fmt.Println("no tokens")
 			return nil
 		}
 	})
