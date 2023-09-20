@@ -1,31 +1,37 @@
 function clickButton(elem) {
     const elemName = elem.textContent.trim();
     const element = document.querySelectorAll('.form');
-    const formBg = document.querySelector('.form-bg')
-    formBg.style.display = "block"
     document.body.classList.add('no-scroll')
+
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    
+    const scrollHeight = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+
+    const topOffset = (windowHeight / 2) - (element[0].offsetHeight / 2) + scrollHeight;
+    
     switch(elemName) {
         case "Войти":
-            element[0].style.display = "block"
+            element[0].style.display = "flex"
             element[1].style.display = "none"
-            //document.querySelector("ul.ul").style.filter = "blur(3px)"
+            element[0].style.height = "230px"
+            element[0].style.top = topOffset + 'px';
+            document.querySelector("ul.ul").style.filter = "blur(3px)"
             break;
         case "Зарегистрироваться":
             element[0].style.display = "none"
-            element[1].style.display = "block"
+            element[1].style.display = "flex"
+            element[1].style.height = "390px"
+            element[1].style.top = topOffset + 'px';
+            document.querySelector("ul.ul").style.filter = "blur(3px)"
             break;
     }
     
 }
 
-function closeForm() {
+function closeForm(element) {
     document.body.classList.remove('no-scroll')
-    const formBg = document.querySelector('.form-bg')
-    formBg.style.display = "none"
-}
-
-function showDocs(elem) {
-
+    document.querySelector("ul.ul").style.filter = "blur(0px)"
+    element.parentNode.style.display = "none"
 }
 
 function sendData(elem) {
@@ -34,15 +40,53 @@ function sendData(elem) {
     let response = undefined
     switch (elem.className) {
         case "sign-up":
-            postData("http://localhost:3000/signup", dataJson)
-            //console.log(response)
+            signUpButton(elem)
             break
         case "sign-in":
-            signIn("http://localhost:3000/token", dataJson)
-            console.log(dataJson)
+            signInButton(elem)
             break
     }
     
+}
+
+function signInButton(element) {
+    const dataArr = elem.parentElement.parentElement.getElementsByTagName("input")
+    const json = {username: dataArr[0].value, password: dataArr[1].value}
+    const response = signIn("http://localhost:3000/token")
+
+    response.then(value => {return value}).then(value => {
+        if ('Token' in value) {
+            console.log("PENIS!!!")
+            setCookie(value.Token)
+            
+        }
+    })
+}
+
+function signUpButton(element) {
+    const dataArr = element.parentElement.parentElement.getElementsByTagName("input")
+    const data = {
+        StudentName: dataArr[0].value, 
+        StudentSurname: dataArr[1].value, 
+        Username: dataArr[2].value, 
+        Password: dataArr[3].value,
+    }
+    const response = signUp("http://localhost:3000/signup", data)
+    response.then(value => console.log(value))
+}
+
+async function signUp(url, json) {
+    const request = new Request(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(json)
+    })
+
+    const response = await (await fetch(request)).json()
+    return response
 }
 
 function getCookie() {
@@ -62,21 +106,8 @@ function getCookie() {
 
 function setCookie(stringToken) {
     console.log(stringToken)
-
     document.cookie = `Token=${stringToken}`
     console.log(document.cookie)
-}
-
-function signIn(url, data) {
-    const response = signPost(url, data)
-    console.log(response, "PENIS")
-    response.then(value => {return value}).then(value => {
-        if ('Token' in value) {
-            console.log("PENIS!!!")
-            setCookie(value.Token)
-            
-        }
-    })
 }
 
 async function signPost(url, data) {
@@ -93,22 +124,6 @@ async function signPost(url, data) {
     const response = await fetch(request)
     return response.json()
 
-}
-
-async function postData(url, data) {
-
-    const request = new Request(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-
-    const response = await fetch(request)
-    console.log(response.json())
-    //return response.json()
 }
 
 async function getUniversity(url, data) {
@@ -132,14 +147,20 @@ let universityId = 0
 function setUniversity(element) {
     const docsForm = document.querySelector(".docs-form")
     docsForm.style.display = "flex"
-    docsForm.style.position = "absolute"
-    docsForm.style.left = "50%"
-    docsForm.style.top = "50%"
-    docsForm.style.transform = "translate(-50%, -50%)"
-    const formBg = document.querySelector('.form-bg')
-    formBg.style.display = "block"
+    document.body.classList.add('no-scroll')
     universityId = element.parentNode.parentNode.parentNode.getAttribute('id')
     console.log(universityId)
+    document.querySelector("ul.ul").style.filter = "blur(3px)"
+    const popup = document.querySelector('.docs-form');
+    
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    
+    const scrollHeight = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+    
+    const topOffset = (windowHeight / 2) - (popup.offsetHeight / 2) + scrollHeight;
+    
+    popup.style.top = topOffset + 'px';
+    popup.style.display = 'flex';
 }
 
 
@@ -183,6 +204,7 @@ function makeUniversityElem(name, description, img) {
     const newUniText = document.createElement("uni-text")
     const newTextContainer = document.createElement("div")
     const newButtonElem = document.createElement("button")
+    newButtonElem.setAttribute("onclick", "setUniversity(this)")
     newButtonElem.classList.add("sub-docs")
     const newTextElem = document.createElement("div")
     newTextElem.classList.add("btn-text")
@@ -209,4 +231,3 @@ function makeUniversityElem(name, description, img) {
 
 window.onscroll=access
 
-//function 

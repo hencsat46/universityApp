@@ -60,9 +60,8 @@
                 </div>
             </li>
         </ul>
-        <div class="form-bg">
             <div class="docs-form">
-                <button class="close-form" onclick="closeForm(0)">
+                <button class="close-form" onclick="closeForm(this)">
                     <img src="img/close.png" alt="x">
                 </button>
                 <div class="docs-text">
@@ -72,7 +71,7 @@
                 <button class="docs-send">Отправить</button>
             </div>
             <div class="form">
-                <button class="close-form" onclick="closeForm(0)">
+                <button class="close-form" onclick="closeForm(this)">
                     <img src="img/close.png" alt="x">
                 </button>
                 <div class="input-box">
@@ -90,9 +89,17 @@
                 </div>
             </div>
             <div class="form">
-                <button class="close-form" onclick="closeForm(1)">
+                <button class="close-form" onclick="closeForm(this)">
                     <img src="img/close.png" alt="x">
                 </button>
+                <div class="input-box">
+                    <label>Имя</label><br/>
+                    <input type="text">
+                </div>
+                <div class="input-box">
+                    <label>Фамилия</label><br/>
+                    <input type="text">
+                </div>
                 <div class="input-box">
                     <label>Логин</label><br/>
                     <input type="text">
@@ -107,7 +114,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        
     </div>    
 </body>
 </html>

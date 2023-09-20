@@ -9,7 +9,8 @@ import (
 
 func Routes(e *echo.Echo) {
 	e.POST("/getUniversity", handlers.GetUniversity)
-	e.POST("/signup", handlers.Registration)
+	e.POST("/signup", handlers.SignUp)
+	e.POST("/signin", handlers.SignIn)
 	e.POST("/token", jwt.ValidationJWT(handlers.TokenOk))
 	//e.GET("/check", createJwt)
 

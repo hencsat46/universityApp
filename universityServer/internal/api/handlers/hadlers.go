@@ -9,12 +9,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Registration(ctx echo.Context) error {
+type ResponseJson struct {
+	Status  string
+	Message string
+}
+
+func SignUp(ctx echo.Context) error {
 
 	dataMap := make(map[string]string)
 
 	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-
+	fmt.Println(dataMap)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -27,11 +32,16 @@ func Registration(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.String(http.StatusOK, "Sign up ok")
+	responseJson := ResponseJson{
+		"ok",
+		"Sign Up success",
+	}
+
+	return ctx.JSON(200, responseJson)
 
 }
 
-func signIn(ctx echo.Context) error {
+func SignIn(ctx echo.Context) error {
 	dataMap := make(map[string]string)
 
 	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)

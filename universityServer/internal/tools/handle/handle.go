@@ -18,17 +18,19 @@ func ParseUniversityJson(number int) ([]string, error) {
 
 }
 
-func checkEmpty(userData map[string]string) (bool, string, string) {
-	if userData["username"] == "" || userData["password"] == "" {
-		return false, "", ""
+func checkEmpty(username string, password string) bool {
+	if username == "" || password == "" {
+		return false
 	}
 
-	return true, userData["username"], userData["password"]
+	return true
 }
 
 func SignIn(user map[string]string, expTime int) (string, error) {
 
-	check, username, password := checkEmpty(user)
+	username, password := user["Username"], user["Password"]
+
+	check := checkEmpty(username, password)
 
 	if !check {
 		return "", errors.New("username or password is empty")
@@ -56,13 +58,15 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 
 func SignUp(user map[string]string) error {
 
-	check, username, password := checkEmpty(user)
+	studentName, studentSurname, username, password := user["StudentName"], user["StudentSurname"], user["Username"], user["Password"]
+	fmt.Println(username, password)
+	check := checkEmpty(username, password)
 
 	if !check {
 		return errors.New("username or password is empty")
 	}
 
-	err := database.SetUser(username, password)
+	err := database.SetUser(username, password, studentName, studentSurname)
 
 	if err != nil {
 		return err

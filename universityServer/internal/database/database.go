@@ -103,7 +103,7 @@ func GetId(username string) (string, error) {
 	return userId, nil
 }
 
-func SetUser(username string, password string) error {
+func SetUser(username string, password string, studentName string, studentSurname string) error {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
 	var count string
@@ -120,7 +120,7 @@ func SetUser(username string, password string) error {
 	}
 	response.Close()
 
-	response, err = conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd) VALUES ('%s', '%s')", username, password))
+	response, err = conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd, student_name, student_surname) VALUES ('%s', '%s', '%s', '%s')", username, password, studentName, studentSurname))
 
 	if err != nil {
 		return err
