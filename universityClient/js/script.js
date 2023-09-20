@@ -50,17 +50,31 @@ function sendData(elem) {
 }
 
 function signInButton(element) {
-    const dataArr = elem.parentElement.parentElement.getElementsByTagName("input")
-    const json = {username: dataArr[0].value, password: dataArr[1].value}
-    const response = signIn("http://localhost:3000/token")
+    const dataArr = element.parentElement.parentElement.getElementsByTagName("input")
+    const json = {Username: dataArr[0].value, Password: dataArr[1].value}
+    const response = signIn("http://localhost:3000/signin", json)
 
-    response.then(value => {return value}).then(value => {
-        if ('Token' in value) {
-            console.log("PENIS!!!")
-            setCookie(value.Token)
+    response.then(value => {
+        console.log(value)
+        if ('Token' in value.Payload) {
+            setCookie(value.Payload.Token)
             
         }
     })
+}
+
+async function signIn(url, json) {
+    const request = new Request(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(json)
+    })
+
+    const response = (await fetch(request)).json()
+    return response
 }
 
 function signUpButton(element) {
@@ -85,7 +99,7 @@ async function signUp(url, json) {
         body: JSON.stringify(json)
     })
 
-    const response = await (await fetch(request)).json()
+    const response = (await fetch(request)).json()
     return response
 }
 

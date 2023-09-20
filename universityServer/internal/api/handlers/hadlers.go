@@ -4,15 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	jsonResponse "universityServer/internal/pkg/responseJson"
 	usecase "universityServer/internal/tools/handle"
 
 	"github.com/labstack/echo/v4"
 )
-
-type ResponseJson struct {
-	Status  string
-	Message string
-}
 
 func SignUp(ctx echo.Context) error {
 
@@ -32,12 +28,14 @@ func SignUp(ctx echo.Context) error {
 		return err
 	}
 
-	responseJson := ResponseJson{
-		"ok",
-		"Sign Up success",
+	responseMap := make(map[string]string)
+	jsonStruct, err := jsonResponse.Response(responseMap, "sign up")
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
 
-	return ctx.JSON(200, responseJson)
+	return ctx.JSON(200, jsonStruct)
 
 }
 
@@ -58,15 +56,16 @@ func SignIn(ctx echo.Context) error {
 		return err
 	}
 
-	jsonMap := make(map[string]string)
-	jsonMap["Token"] = token
+	responseMap := make(map[string]string)
+	responseMap["Token"] = token
+	jsonStruct, err := jsonResponse.Response(responseMap, "sign in")
 
-	jsonString, err := json.Marshal(jsonMap)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
-	return ctx.String(http.StatusOK, string(jsonString))
+	return ctx.JSON(http.StatusOK, jsonStruct)
 }
 
 func GetUniversity(ctx echo.Context) error {
