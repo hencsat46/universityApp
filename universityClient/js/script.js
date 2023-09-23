@@ -180,10 +180,10 @@ let remained = 0
 
 function getRemain() {
     const response = remainRequest("http://localhost:3000/getRemain")
+    flag = false
     response.then(value => {
         remained = value.Payload.Message
-        console.log(remained)
-        console.log(value.Payload)
+        flag = true
     })
 }
 
@@ -205,12 +205,13 @@ async function remainRequest(url) {
 async function makeJsonUniversity() {
     flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
+    
     if (remained <= universityCount) {
+        
         return
     }
-
     if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 10) {
-        const universityOrder = universityCount - 2
+        const universityOrder = universityCount
         const requestJson = `{"order": ${universityOrder}}`
         console.log(requestJson)
         const response = await getUniversity("http://localhost:3000/getUniversity", requestJson)
