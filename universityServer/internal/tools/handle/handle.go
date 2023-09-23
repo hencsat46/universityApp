@@ -18,6 +18,15 @@ func ParseUniversityJson(number int) ([]string, error) {
 
 }
 
+func GetRemain() (string, error) {
+	remain, err := database.GetRemain()
+	if err != nil {
+		return "", err
+	}
+
+	return remain, nil
+}
+
 func checkEmpty(username string, password string) bool {
 	if username == "" || password == "" {
 		return false

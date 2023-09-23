@@ -152,7 +152,6 @@ async function getUniversity(url, data) {
     
     return response.json()
 }
-let remained = 1
 
 let flag = true
 
@@ -177,11 +176,36 @@ function setUniversity(element) {
     popup.style.display = 'flex';
 }
 
+let remained = 0
+
+function getRemain() {
+    const response = remainRequest("http://localhost:3000/getRemain")
+    response.then(value => {
+        remained = value.Payload.Message
+        console.log(remained)
+        console.log(value.Payload)
+    })
+}
+
+getRemain()
+
+async function remainRequest(url) {
+    const request = new Request(url, {
+        method: "GET",
+        mode: "cors",
+    })
+
+    const response = await fetch(request)
+
+    return await response.json()
+
+}
+
 
 async function makeJsonUniversity() {
     flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
-    if (remained <= universityCount - 2) {
+    if (remained <= universityCount) {
         return
     }
 

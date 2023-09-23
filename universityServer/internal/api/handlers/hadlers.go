@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"universityServer/internal/database"
 	jsonResponse "universityServer/internal/pkg/responseJson"
 	usecase "universityServer/internal/tools/handle"
 
@@ -66,6 +67,26 @@ func SignIn(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, jsonStruct)
+}
+
+func GetRemain(ctx echo.Context) error {
+	remain, err := database.GetRemain()
+	if err != nil {
+		jsonStruct, err := jsonResponse.Response(make(map[string]string), err.Error())
+		if err != nil {
+			fmt.Println(err.Error())
+			return err
+		}
+		return ctx.JSON(500, jsonStruct)
+	}
+	responseMap := make(map[string]string)
+	responseMap["remain"] = remain
+	jsonStruct, err := jsonResponse.Response(responseMap, "remain")
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	return ctx.JSON(200, jsonStruct)
 }
 
 func GetUniversity(ctx echo.Context) error {

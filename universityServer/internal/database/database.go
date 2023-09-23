@@ -48,7 +48,7 @@ func GetUniversity(border int) ([]string, error) {
 	}
 
 	result.Close()
-	universityArray[3], err = getRemain(conn)
+	universityArray[3], err = GetRemain()
 	if err != nil {
 		return universityArray, err
 	}
@@ -61,7 +61,9 @@ func GetUniversity(border int) ([]string, error) {
 
 }
 
-func getRemain(conn *pgx.Conn) (string, error) {
+func GetRemain() (string, error) {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
 	remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
 	defer func() {
 		if err == nil {
