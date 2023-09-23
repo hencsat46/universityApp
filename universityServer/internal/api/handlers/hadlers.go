@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"universityServer/internal/database"
+	database "universityServer/internal/database"
+	jwtActions "universityServer/internal/pkg/jwt"
 	jsonResponse "universityServer/internal/pkg/responseJson"
 	usecase "universityServer/internal/tools/handle"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -49,7 +51,7 @@ func SignIn(ctx echo.Context) error {
 		return err
 	}
 
-	expTime := 2
+	expTime := 30
 
 	token, err := usecase.SignIn(dataMap, expTime)
 
@@ -121,6 +123,33 @@ func GetUniversity(ctx echo.Context) error {
 	ctx.Response().Header().Set("Content-Type", "application/json")
 	return ctx.String(http.StatusOK, string(convertUniversity))
 
+}
+
+func AddStudent(ctx echo.Context) error {
+	requestMap := make(map[string]string)
+	claims := jwt.MapClaims{}
+	secretKey, err := jwtActions.GetKey()
+	if err != nil {
+		return err
+	}
+	jwt.ParseWithClaims(ctx.Request().Header["Token"][0], claims, func(token *jwt.Token) (interface{}, error) {
+
+		return []byte(secretKey), nil
+	})
+
+	username := fmt.Sprint(claims["iss"])
+
+	err = json.NewDecoder(ctx.Request().Body).Decode(&requestMap)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	requestMap["Username"] = username
+
+	usecase.ParseStudentRequest(requestMap)
+	return nil
 }
 
 func TokenOk(ctx echo.Context) error {

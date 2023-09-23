@@ -87,6 +87,26 @@ func GetRemain() (string, error) {
 
 }
 
+func AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+	fmt.Println(fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
+	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
+	if err != nil {
+		return err
+	}
+	var status string
+	result.Next()
+	err = result.Scan(&status)
+	if err != nil {
+		return err
+	}
+	if status == "0" {
+		return nil
+	}
+	return errors.New("student or university doesn't exists")
+}
+
 func GetId(username string) (string, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())

@@ -213,7 +213,6 @@ async function makeJsonUniversity() {
     if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 10) {
         const universityOrder = universityCount
         const requestJson = `{"order": ${universityOrder}}`
-        console.log(requestJson)
         const response = await getUniversity("http://localhost:3000/getUniversity", requestJson)
         
         makeUniversityElem(response.name, response.description, response.imagePath)

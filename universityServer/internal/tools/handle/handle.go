@@ -65,6 +65,18 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 
 }
 
+func ParseStudentRequest(data map[string]string) error {
+	username, studentUniversity, points := data["Username"], data["University"], data["Points"]
+
+	err := database.AddStudentRecord(username, studentUniversity, points)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
 func SignUp(user map[string]string) error {
 
 	studentName, studentSurname, username, password := user["StudentName"], user["StudentSurname"], user["Username"], user["Password"]

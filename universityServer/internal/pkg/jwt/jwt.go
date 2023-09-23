@@ -30,7 +30,7 @@ func CreateJWT(username string, id string, expTime int) (string, error) {
 		time.Now().Unix(),
 	})
 
-	key, err := getKey()
+	key, err := GetKey()
 
 	if err != nil {
 		return "", err
@@ -45,7 +45,7 @@ func CreateJWT(username string, id string, expTime int) (string, error) {
 
 }
 
-func getKey() (string, error) {
+func GetKey() (string, error) {
 	key, err := db.GetKey(db.ConnectDB())
 
 	if err != nil {
@@ -63,7 +63,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 					fmt.Println("Токен говно")
 					return nil, errors.New("not authorized")
 				}
-				key, err := getKey()
+				key, err := GetKey()
 				if err != nil {
 					fmt.Println(err)
 					return nil, err
