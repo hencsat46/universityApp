@@ -149,7 +149,14 @@ func AddStudent(ctx echo.Context) error {
 	requestMap["Username"] = username
 
 	usecase.ParseStudentRequest(requestMap)
-	return nil
+
+	responseJson, err := jsonResponse.Response(requestMap, "add student")
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(200, responseJson)
 }
 
 func TokenOk(ctx echo.Context) error {

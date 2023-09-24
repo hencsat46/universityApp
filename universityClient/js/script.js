@@ -103,7 +103,7 @@ async function signUp(url, json) {
     return response
 }
 
-function getCookie() {
+function getToken() {
     const cookies = document.cookie
     let cookieArr = cookies.split(';')
     const length = cookieArr.length
@@ -124,22 +124,6 @@ function setCookie(stringToken) {
     console.log(document.cookie)
 }
 
-async function signPost(url, data) {
-    const request = new Request(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json",
-            "Token": getCookie()
-        },
-        body: JSON.stringify(data)
-    })
-
-    const response = await fetch(request)
-    return response.json()
-
-}
-
 async function getUniversity(url, data) {
     const response = await fetch(url, {
         method: "POST",
@@ -155,25 +139,55 @@ async function getUniversity(url, data) {
 
 let flag = true
 
-let universityId = 0
+let universityName = ""
 
 function setUniversity(element) {
+    
     const docsForm = document.querySelector(".docs-form")
     docsForm.style.display = "flex"
     document.body.classList.add('no-scroll')
-    universityId = element.parentNode.parentNode.parentNode.getAttribute('id')
-    console.log(universityId)
     document.querySelector("ul.ul").style.filter = "blur(3px)"
     const popup = document.querySelector('.docs-form');
-    
     const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    
     const scrollHeight = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
-    
     const topOffset = (windowHeight / 2) - (popup.offsetHeight / 2) + scrollHeight;
-    
     popup.style.top = topOffset + 'px';
     popup.style.display = 'flex';
+
+    universityName = element.parentNode.querySelector("h2").innerHTML
+    
+}
+
+function submitUniversity(element) {
+    const pointsString = element.parentNode.querySelector(".docs-input").value
+    
+    const dataObject = {
+        University: universityName,
+        Points: pointsString
+    }
+    
+
+    const response = requestUniversity("http://localhost:3000/addStudent", dataObject)
+    response.then(value => console.log(value))
+}
+
+async function requestUniversity(url, data) {
+    const request = new Request(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+            "Token": getToken(),
+        },
+        body: JSON.stringify(data)
+    })
+
+    const response = (await fetch(request)).json()
+
+    return response
+
+
+
 }
 
 let remained = 0

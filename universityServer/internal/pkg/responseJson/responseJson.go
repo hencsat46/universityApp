@@ -26,6 +26,11 @@ type RemainMessage struct {
 	Message string
 }
 
+type AddStudent struct {
+	Message  string
+	Username string
+}
+
 func Response(data map[string]string, status string) (ResponseJson, error) {
 
 	if status == "sign in" {
@@ -48,6 +53,12 @@ func Response(data map[string]string, status string) (ResponseJson, error) {
 		payload := RemainMessage{data["remain"]}
 		responsejson := ResponseJson{"Ok", payload}
 		return responsejson, nil
+	}
+
+	if status == "add student" {
+		payload := AddStudent{"You were added", data["Username"]}
+		responseJson := ResponseJson{"Ok", payload}
+		return responseJson, nil
 	}
 
 	payload := errorMessages{status}
