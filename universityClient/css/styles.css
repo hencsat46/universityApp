@@ -15,7 +15,6 @@ body {
 }
 
 .wrapper {
-    max-width: 1300px;
     margin: 0 auto;
 }
 
@@ -173,7 +172,7 @@ button.sign-up {
 }
 
 .text-container h2 {
-    font-size: 40px;
+    font-size: 30px;
     text-align: center;
 }
 
@@ -185,24 +184,26 @@ ul {
 
 ul.ul li {
     margin-top: 50px;
-    box-shadow: 0 0 20px white;
-    border-radius: 20px;
+    border-radius: 25px;
     overflow: hidden;
 }
 
 .uni-text {
-    font-size: 20px;
-    margin: 0 20px;
+    font-size: 18px;
+    padding: 0 40px;
+    font-weight: 400;
 }
 
 .info-container {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
 }
 
 .info-container img {
-    width: 615px;
-    border-radius: 20px;
+    width: 100%;
+    padding: 0 20px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .uni-wrapper {
@@ -224,11 +225,11 @@ ul.ul li {
     height: 50px;
     cursor: pointer;
     background: transparent;
-    border: 4px solid black;
+    border: 2px solid black;
     border-radius: 10px;
-    font-size: 20px;
+    font-size: 18px;
     color: black;
-    font-weight: 700;
+    font-weight: 400;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -281,4 +282,16 @@ ul.ul li {
 .docs-send:hover {
     background: black;
     color: white
+}
+
+.ul{
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ul li{
+    width: 45%;
 }

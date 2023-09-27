@@ -1,0 +1,25 @@
+.wrapper {
+    background: #3a3939;
+}
+
+.sign-btns {
+    display: flex;
+}
+
+.links a {
+    padding: 0 10px;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+}
+
+header {
+    position: relative;
+    width: 100%;
+    padding: 20px 100px;
+    background: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    filter: blur(0px);
+}
