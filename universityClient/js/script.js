@@ -192,21 +192,16 @@ async function requestUniversity(url, data) {
 
 let remained = 0
 
-function getRemain() {
-    const response = remainRequest("http://localhost:3000/getRemain")
-    response.then(value => {
-        remained = value.Payload.Message
-        const promise = new Promise((resolve, reject) => {
-            access()
-            console.log("hello from first")
-            console.log(document.querySelectorAll(".uni-wrapper").length)
-            resolve()
-        }).then(() => {
-            console.log("hello from second")
-            access()
-        })
-        
-    })
+async function getRemain() {
+    const response = await remainRequest("http://localhost:3000/getRemain")
+    
+    remained = response.Payload.Message
+
+    console.log(remained)
+    await access()
+    console.log("between accesses")
+    await access()
+    console.log("end of access")
 }
 
 getRemain()
@@ -225,7 +220,6 @@ async function remainRequest(url) {
 
 
 async function makeJsonUniversity() {
-    console.log("start function")
     flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
     console.log(universityCount)
@@ -237,33 +231,35 @@ async function makeJsonUniversity() {
         const universityOrder = universityCount
         const requestJson = `{"order": ${universityOrder}}`
         const response = getUniversity("http://localhost:3000/getUniversity", requestJson)
-        let firstUniversity = []
-        let secondUniversity = []
-        await response.then(value => {
-            firstUniversity = value.Payload.FirstUni.split("|");
-            secondUniversity = value.Payload.SecondUni.split("|");
-            remained = value.Payload.Remain.Message
-            console.log(remained)
-        })
+        const universityObject = await response
+        const firstUniversity = universityObject.Payload.FirstUni.split("|");
+        const secondUniversity = universityObject.Payload.SecondUni.split("|");
+
+        console.log(firstUniversity, secondUniversity)
+        makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
+        console.log("hello")
+        // await response.then(value => {
+        //     remained = value.Payload.Remain.Message
+        //     console.log(remained)
+        // })
         
-        await makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
+        // await makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
         // makeUniversityElem(response.name, response.description, response.imagePath)
         // if (!response.left) {
         //     return
         // }
         // remained = await parseInt(response.left)
     }
-    console.log("end function")
     flag = true
 }
 
-function access() {
+async function access() {
     if (flag) {
-        makeJsonUniversity()
+        await makeJsonUniversity()
     }
 }
 
-function makeUniversityElem(firstName, firstDescription, firstImg, secondName, secondDescription, secondImg) {
+async function makeUniversityElem(firstName, firstDescription, firstImg, secondName, secondDescription, secondImg) {
     const htmlElement = `
         <div class="uni-wrapper" id="0">
             <div class="info-container">
