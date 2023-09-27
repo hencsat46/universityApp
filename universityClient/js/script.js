@@ -194,11 +194,18 @@ let remained = 0
 
 function getRemain() {
     const response = remainRequest("http://localhost:3000/getRemain")
-    flag = false
     response.then(value => {
         remained = value.Payload.Message
-        flag = true
-        access()
+        const promise = new Promise((resolve, reject) => {
+            access()
+            console.log("hello from first")
+            console.log(document.querySelectorAll(".uni-wrapper").length)
+            resolve()
+        }).then(() => {
+            console.log("hello from second")
+            access()
+        })
+        
     })
 }
 
@@ -217,10 +224,11 @@ async function remainRequest(url) {
 }
 
 
-function makeJsonUniversity() {
+async function makeJsonUniversity() {
+    console.log("start function")
     flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
-    
+    console.log(universityCount)
     if (remained <= universityCount) {
         
         return
@@ -229,19 +237,23 @@ function makeJsonUniversity() {
         const universityOrder = universityCount
         const requestJson = `{"order": ${universityOrder}}`
         const response = getUniversity("http://localhost:3000/getUniversity", requestJson)
-        response.then(value => {
-            const firstUniversity = value.Payload.FirstUni.split("|");
-            const secondUniversity = value.Payload.SecondUni.split("|");
+        let firstUniversity = []
+        let secondUniversity = []
+        await response.then(value => {
+            firstUniversity = value.Payload.FirstUni.split("|");
+            secondUniversity = value.Payload.SecondUni.split("|");
             remained = value.Payload.Remain.Message
-            makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2])
-            makeUniversityElem(secondUniversity[0], secondUniversity[1], secondUniversity[2])
-        })        
+            console.log(remained)
+        })
+        
+        await makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
         // makeUniversityElem(response.name, response.description, response.imagePath)
         // if (!response.left) {
         //     return
         // }
         // remained = await parseInt(response.left)
     }
+    console.log("end function")
     flag = true
 }
 
@@ -251,39 +263,41 @@ function access() {
     }
 }
 
-function makeUniversityElem(name, description, img) {
-    const newLiElem = document.createElement("li")
-    const newUniWrapper = document.createElement("div")
-    const newInfoContainer = document.createElement("div")
-    newInfoContainer.classList.add("info-container")
-    newUniWrapper.classList.add("uni-wrapper")
-    newUniWrapper.setAttribute("id", document.querySelectorAll(".uni-wrapper").length)
-    const newH2Elem = document.createElement("h2")
-    const newImgElem = document.createElement("img")
-    const newUniText = document.createElement("uni-text")
-    const newTextContainer = document.createElement("div")
-    const newButtonElem = document.createElement("button")
-    newButtonElem.setAttribute("onclick", "setUniversity(this)")
-    newButtonElem.classList.add("sub-docs")
-    const newTextElem = document.createElement("div")
-    newTextElem.classList.add("btn-text")
-    newTextElem.innerHTML = "Подать документы"
-    newButtonElem.append(newTextElem)
-    newTextContainer.classList.add("text-container")
-    newUniText.classList.add("uni-text")
-    const ulClass = document.querySelector("ul.ul")
-    newInfoContainer.append(newImgElem)
-    ulClass.append(newLiElem)
-    newLiElem.append(newUniWrapper)
-    newUniWrapper.append(newInfoContainer)
-    newTextContainer.append(newH2Elem)
-    newTextContainer.append(newUniText)
-    newTextContainer.append(newButtonElem)
-    newInfoContainer.append(newTextContainer)
-    newH2Elem.innerText = name
-    newImgElem.setAttribute("src", img)
-    newImgElem.setAttribute("alt", "x")
-    newUniText.innerText = description
+function makeUniversityElem(firstName, firstDescription, firstImg, secondName, secondDescription, secondImg) {
+    const htmlElement = `
+        <div class="uni-wrapper" id="0">
+            <div class="info-container">
+                <img src="${firstImg}" alt="x">
+                <div class="text-container">
+                    <h2>${firstName}</h2>
+                    <div class="uni-text">
+                        ${firstDescription} 
+                    </div>
+                    <button class="sub-docs" onclick="setUniversity(this)">
+                        <div class="btn-text">Подать документы</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="uni-wrapper" id="1">
+            <div class="info-container">
+                <img src="${secondImg}" alt="x">
+                <div class="text-container">
+                    <h2>${secondName}</h2>
+                    <div class="uni-text">
+                        ${secondDescription}
+                    </div>
+                    <button class="sub-docs" onclick="setUniversity(this)">
+                        <div class="btn-text">Подать документы</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `
+    const liElement = document.createElement("li")
+    liElement.innerHTML = htmlElement
+    document.querySelector("ul.ul").append(liElement)
+    console.log("stop pushing elements")
 }
 
 
