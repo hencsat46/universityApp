@@ -49,12 +49,9 @@ func Response(data map[string]string, status string) (ResponseJson, error) {
 		responseJson := ResponseJson{"Ok", payload}
 		return responseJson, nil
 	case "sign up":
-		value, ok := data["Token"]
-		if !ok {
-			return ResponseJson{}, errors.New("token not found")
-		}
-		payload := SignInMessage{"Sign in ok", value}
-		return ResponseJson{"Ok", payload}, nil
+		payload := SignUpMessage{"Sign up ok"}
+		responsejson := ResponseJson{"Ok", payload}
+		return responsejson, nil
 	case "remain":
 		payload := RemainMessage{data["remain"]}
 		return ResponseJson{"Ok", payload}, nil

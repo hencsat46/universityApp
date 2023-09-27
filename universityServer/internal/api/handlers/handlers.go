@@ -25,7 +25,7 @@ func SignUp(ctx echo.Context) error {
 	}
 
 	err = usecase.SignUp(dataMap)
-
+	fmt.Println("delivery message")
 	if err != nil {
 		fmt.Println(err)
 		return err

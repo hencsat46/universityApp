@@ -38,12 +38,13 @@ function sendData(elem) {
     const dataArr = elem.parentElement.parentElement.getElementsByTagName("input")
     const dataJson = {username: dataArr[0].value, password: dataArr[1].value}
     let response = undefined
+    console.log(elem.className)
     switch (elem.className) {
         case "sign-up":
             signUpButton(elem)
             break
         case "sign-in":
-            signInButton(elem)
+            //signInButton(elem)
             break
     }
     
@@ -77,7 +78,7 @@ async function signIn(url, json) {
     return response
 }
 
-function signUpButton(element) {
+async function signUpButton(element) {
     const dataArr = element.parentElement.parentElement.getElementsByTagName("input")
     const data = {
         StudentName: dataArr[0].value, 
@@ -85,22 +86,27 @@ function signUpButton(element) {
         Username: dataArr[2].value, 
         Password: dataArr[3].value,
     }
-    const response = signUp("http://localhost:3000/signup", data)
-    response.then(value => console.log(value))
-}
 
-async function signUp(url, json) {
-    const request = new Request(url, {
+    const request = new Request("http://localhost:3000/signup", {
         method: "POST",
         mode: "cors",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(json)
+        body: JSON.stringify(data)
     })
 
+    console.log(request)
+
     const response = (await fetch(request)).json()
-    return response
+    console.log(await response)
+}
+
+async function signUp(url, json) {
+    
+
+    const response = await fetch(request)
+    return response.json()
 }
 
 function getToken() {
@@ -199,9 +205,7 @@ async function getRemain() {
 
     console.log(remained)
     await access()
-    console.log("between accesses")
     await access()
-    console.log("end of access")
 }
 
 getRemain()
@@ -222,7 +226,6 @@ async function remainRequest(url) {
 async function makeJsonUniversity() {
     flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
-    console.log(universityCount)
     if (remained <= universityCount) {
         
         return
@@ -235,9 +238,8 @@ async function makeJsonUniversity() {
         const firstUniversity = universityObject.Payload.FirstUni.split("|");
         const secondUniversity = universityObject.Payload.SecondUni.split("|");
 
-        console.log(firstUniversity, secondUniversity)
         makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
-        console.log("hello")
+        
         // await response.then(value => {
         //     remained = value.Payload.Remain.Message
         //     console.log(remained)
@@ -261,7 +263,7 @@ async function access() {
 
 async function makeUniversityElem(firstName, firstDescription, firstImg, secondName, secondDescription, secondImg) {
     const htmlElement = `
-        <div class="uni-wrapper" id="0">
+        <div class="uni-wrapper">
             <div class="info-container">
                 <img src="${firstImg}" alt="x">
                 <div class="text-container">
@@ -275,7 +277,7 @@ async function makeUniversityElem(firstName, firstDescription, firstImg, secondN
                 </div>
             </div>
         </div>
-        <div class="uni-wrapper" id="1">
+        <div class="uni-wrapper">
             <div class="info-container">
                 <img src="${secondImg}" alt="x">
                 <div class="text-container">
@@ -293,7 +295,6 @@ async function makeUniversityElem(firstName, firstDescription, firstImg, secondN
     const liElement = document.createElement("li")
     liElement.innerHTML = htmlElement
     document.querySelector("ul.ul").append(liElement)
-    console.log("stop pushing elements")
 }
 
 
