@@ -108,20 +108,16 @@ func GetUniversity(ctx echo.Context) error {
 		return err
 	}
 
-	jsonUniversity := make(map[string]string)
-	jsonUniversity["name"] = result[0]
-	jsonUniversity["description"] = result[1]
-	jsonUniversity["imagePath"] = result[2]
-	jsonUniversity["left"] = result[3]
-	convertUniversity, err := json.Marshal(jsonUniversity)
-
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
-
+	response, err := jsonResponse.Response(result, "university")
+	if err != nil {
+		fmt.Println(err)
+	}
 	ctx.Response().Header().Set("Content-Type", "application/json")
-	return ctx.String(http.StatusOK, string(convertUniversity))
+	return ctx.JSON(http.StatusOK, response)
 
 }
 

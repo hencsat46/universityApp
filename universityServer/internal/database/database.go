@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 
 	pgx "github.com/jackc/pgx/v5"
 )
@@ -24,40 +25,34 @@ func ConnectDB() *pgx.Conn {
 	return conn
 }
 
-func GetUniversity(border int) ([]string, error) {
+func GetUniversity(border int) (map[string]string, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
 
-	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+1))
-	result.Next()
-	defer func() {
-		if err == nil {
-			return
-		}
-		result.Close()
-	}()
-	universityArray := make([]string, 4)
+	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+2))
+
+	universityMap := make(map[string]string)
 	if err != nil {
-		return universityArray, err
+		return universityMap, err
 	}
+	for i := 0; result.Next(); i++ {
+		tempArray := make([]string, 3)
 
-	err = result.Scan(&universityArray[0], &universityArray[1], &universityArray[2])
-
-	if err != nil {
-		return universityArray, err
+		err = result.Scan(&tempArray[0], &tempArray[1], &tempArray[2])
+		if err != nil {
+			return universityMap, err
+		}
+		tempString := fmt.Sprintf("%s|%s|%s", tempArray[0], tempArray[1], tempArray[2])
+		universityMap[strconv.Itoa(i)] = tempString
 	}
 
 	result.Close()
-	universityArray[3], err = GetRemain()
+	universityMap["2"], err = GetRemain()
 	if err != nil {
-		return universityArray, err
+		return universityMap, err
 	}
 
-	if err != nil {
-		return universityArray, err
-	}
-
-	return universityArray, nil
+	return universityMap, nil
 
 }
 

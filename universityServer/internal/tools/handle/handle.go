@@ -7,7 +7,7 @@ import (
 	jwtToken "universityServer/internal/pkg/jwt"
 )
 
-func ParseUniversityJson(number int) ([]string, error) {
+func ParseUniversityJson(number int) (map[string]string, error) {
 	result, err := database.GetUniversity(number)
 	if err != nil {
 		fmt.Println(err)
