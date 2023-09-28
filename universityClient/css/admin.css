@@ -1,0 +1,29 @@
+.login-form {
+    width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+button.form-button {
+    margin-top: 10px;
+
+}
+
+li {
+    list-style-type: none;
+    display: flex;
+}
+
+.del-st {
+    margin-right: 5px;
+}
+
+.del-rec {
+    margin-right: 5px;
+}
+
+.stop-sub {
+    margin-right: 5px;
+}

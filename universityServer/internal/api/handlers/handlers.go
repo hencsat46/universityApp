@@ -61,6 +61,7 @@ func SignIn(ctx echo.Context) error {
 
 	responseMap := make(map[string]string)
 	responseMap["Token"] = token
+	fmt.Println(responseMap)
 	jsonStruct, err := jsonResponse.Response(responseMap, "sign in")
 
 	if err != nil {

@@ -56,6 +56,11 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 		return "", nil
 	}
 
+	if username == "admin" {
+		fmt.Println("aaaaaaaaaaaaa")
+		return "", nil
+	}
+
 	newToken, err := jwtToken.CreateJWT(username, userId, expTime)
 	if err != nil {
 		return "", err

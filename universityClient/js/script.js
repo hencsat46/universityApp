@@ -44,28 +44,17 @@ function sendData(elem) {
             signUpButton(elem)
             break
         case "sign-in":
-            //signInButton(elem)
+            signInButton(elem)
             break
     }
     
 }
 
-function signInButton(element) {
+async function signInButton(element) {
     const dataArr = element.parentElement.parentElement.getElementsByTagName("input")
     const json = {Username: dataArr[0].value, Password: dataArr[1].value}
-    const response = signIn("http://localhost:3000/signin", json)
-
-    response.then(value => {
-        console.log(value)
-        if ('Token' in value.Payload) {
-            setCookie(value.Payload.Token)
-            
-        }
-    })
-}
-
-async function signIn(url, json) {
-    const request = new Request(url, {
+    
+    const request = new Request("http://localhost:3000/signin", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -73,9 +62,13 @@ async function signIn(url, json) {
         },
         body: JSON.stringify(json)
     })
-
-    const response = (await fetch(request)).json()
-    return response
+    
+    
+    const response = await (await fetch(request)).json()
+    
+    if ('Token' in response.Payload) {
+        setCookie(response.Payload.Token)
+    }
 }
 
 async function signUpButton(element) {
@@ -100,13 +93,6 @@ async function signUpButton(element) {
 
     const response = (await fetch(request)).json()
     console.log(await response)
-}
-
-async function signUp(url, json) {
-    
-
-    const response = await fetch(request)
-    return response.json()
 }
 
 function getToken() {
@@ -240,17 +226,6 @@ async function makeJsonUniversity() {
 
         makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
         
-        // await response.then(value => {
-        //     remained = value.Payload.Remain.Message
-        //     console.log(remained)
-        // })
-        
-        // await makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
-        // makeUniversityElem(response.name, response.description, response.imagePath)
-        // if (!response.left) {
-        //     return
-        // }
-        // remained = await parseInt(response.left)
     }
     flag = true
 }
