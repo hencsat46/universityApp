@@ -27,6 +27,7 @@ header {
     justify-content: space-between;
     align-items: center;
     filter: blur(0px);
+    font-weight: 700;
 }
 
 .university-choice:hover {

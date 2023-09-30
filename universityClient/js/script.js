@@ -67,6 +67,7 @@ async function signInButton(element) {
     const response = await (await fetch(request)).json()
     
     if ('Token' in response.Payload) {
+        setCookie("")
         setCookie(response.Payload.Token)
     }
 }

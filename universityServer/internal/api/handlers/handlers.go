@@ -160,3 +160,21 @@ func TokenOk(ctx echo.Context) error {
 	fmt.Println("hello")
 	return nil
 }
+
+func GetRecords(ctx echo.Context) error {
+	records, err := usecase.ParseRecords()
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	jsonData, err := jsonResponse.Response(records, "studentRecords")
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return ctx.JSON(200, jsonData)
+}

@@ -4,14 +4,18 @@ CREATE TABLE tempUni (
     uni_name TEXT,
     uni_des TEXT,
     uni_img TEXT,
+    min_point INT,
+    seats_count INT
 
 );
 
 CREATE TABLE users (
 
-    user_id SERIAL,
+    user_id SERIAL PRIMARY KEY,
     username TEXT,
-    passwd TEXT
+    passwd TEXT,
+    student_name TEXT,
+    student_surname TEXT
 
 );
 

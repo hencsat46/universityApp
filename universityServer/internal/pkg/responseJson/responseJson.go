@@ -2,6 +2,7 @@ package responsejson
 
 import (
 	"errors"
+	"strings"
 )
 
 type SignInMessage struct {
@@ -37,6 +38,10 @@ type AddStudent struct {
 	Username string
 }
 
+type Records struct {
+	Message [][]string
+}
+
 func Response(data map[string]string, status string) (ResponseJson, error) {
 
 	switch status {
@@ -62,6 +67,16 @@ func Response(data map[string]string, status string) (ResponseJson, error) {
 		remain := RemainMessage{data["2"]}
 		payload := UniversityJson{data["0"], data["1"], remain}
 		return ResponseJson{"Ok", payload}, nil
+	case "studentRecords":
+		recordsString := strings.Split(data["records"], ";")
+		length := len(recordsString)
+		recordsArr := make([][]string, length)
+		for i := 0; i < length; i++ {
+			recordsArr[i] = strings.Split(recordsString[i], "|")
+		}
+		records := Records{recordsArr}
+		responseJson := ResponseJson{"Ok", records}
+		return responseJson, nil
 	default:
 		payload := errorMessages{status}
 		return ResponseJson{"Ok", payload}, nil

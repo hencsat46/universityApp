@@ -101,3 +101,33 @@ func SignUp(user map[string]string) error {
 	return nil
 
 }
+
+func ParseRecords() (map[string]string, error) {
+
+	records, err := database.GetRecords()
+
+	if err != nil {
+		fmt.Println(err)
+		return make(map[string]string), err
+	}
+
+	length := len(records)
+
+	recordsMap := make(map[string]string)
+
+	var finalString string
+
+	for i := 0; i < length; i++ {
+		tempString := fmt.Sprintf("%s|%s|%s|%s", records[i][0], records[i][1], records[i][2], records[i][3])
+		finalString += tempString
+		if length-1 != i {
+			finalString += ";"
+		}
+
+	}
+
+	recordsMap["records"] = finalString
+
+	return recordsMap, nil
+
+}

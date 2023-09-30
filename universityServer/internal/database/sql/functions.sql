@@ -18,7 +18,7 @@ DECLARE
 	response INT;
 BEGIN
 	response = (SELECT COUNT(*) FROM users WHERE username = uname);
-	IF response = 1 THEN
+	IF response > 0 THEN
 		RETURN 0;
 	END IF;
 	RETURN -1;
@@ -36,3 +36,10 @@ BEGIN
 	INSERT INTO students_records(student_id, student_university, student_points) VALUES (st_id, university_id, points);
 	RETURN 0;
 END; $$
+
+CREATE OR REPLACE FUNCTION get_records()
+RETURNS TABLE("Имя" TEXT, "Фамилия" TEXT, "Вуз" TEXT, "Баллы" INT)
+LANGUAGE plpgsql AS $$
+BEGIN
+	RETURN query (SELECT u.student_name, u.student_surname, t.uni_name, sr.student_points FROM users u RIGHT JOIN students_records sr ON sr.student_id = u.user_id LEFT JOIN tempuni t ON t.uni_id = sr.student_university);
+END; $$;

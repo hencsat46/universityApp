@@ -82,6 +82,41 @@ func GetRemain() (string, error) {
 
 }
 
+func GetRecords() ([][]string, error) {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+
+	countQuery, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM students_records;")
+
+	if err != nil {
+		fmt.Println(err)
+		return make([][]string, 0), err
+	}
+
+	var count int
+	countQuery.Next()
+	countQuery.Scan(&count)
+	countQuery.Close()
+
+	recordsArr := make([][]string, 0, count)
+
+	recordsQuery, err := conn.Query(context.Background(), "SELECT * FROM get_records();")
+
+	if err != nil {
+		fmt.Println(err)
+		return make([][]string, 0), err
+	}
+
+	for recordsQuery.Next() {
+		record := make([]string, 4)
+		recordsQuery.Scan(&record[0], &record[1], &record[2], &record[3])
+		recordsArr = append(recordsArr, record)
+	}
+
+	return recordsArr, nil
+
+}
+
 func AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())

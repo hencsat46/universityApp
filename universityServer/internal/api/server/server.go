@@ -18,14 +18,3 @@ func Run() {
 	router.Routes(e)
 	e.Start(":3000")
 }
-
-// func errorIndicator(ctx echo.Context, err error) error {
-// 	errorsHandler.ErrorHandler(ctx, err)
-// 	return nil
-// }
-
-// func expiredToken(ctx echo.Context, err error) error {
-// 	if err.Error() == "Token is expired" {
-
-// 	}
-// }
