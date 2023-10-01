@@ -10,7 +10,7 @@ async function getProfile() {
     const response = await (await fetch(request)).json()
 
     const newHtml = `
-    
+
         <div class="user-bio">
             <div class="user-photo">
                 <img src="../img/usernameIcon.jpg" alt="x">
@@ -18,18 +18,15 @@ async function getProfile() {
             <div class="user-data">
                 <div class="user-name">${response.Payload.Name}</div>
                 <div class="user-surname">${response.Payload.Surname}</div>
-            </div>
-            <div class="user-university">
-                ${response.Payload.University}
-            </div>
-            <div class="univeristy-status">
-                Поступил
+                <div class="user-university">
+                    ${response.Payload.University}
+                </div>
             </div>
         </div>
     
     `
 
-    //document.querySelector(".wrapper").innerHTML = newHtml
+    document.querySelector(".wrapper").innerHTML = newHtml
 }
 
 getProfile()

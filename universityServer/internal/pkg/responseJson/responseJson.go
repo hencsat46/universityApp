@@ -10,6 +10,10 @@ type SignInMessage struct {
 	Token   string
 }
 
+type AutoLogin struct {
+	Message string
+}
+
 type ResponseJson struct {
 	Status  string
 	Payload interface{}
@@ -89,6 +93,8 @@ func Response(data map[string]string, status string) (ResponseJson, error) {
 		}
 		payload := Profile{data["Username"], data["Name"], data["Surname"], data["University"]}
 		return ResponseJson{"Ok", payload}, nil
+	case "autoLogin":
+		return ResponseJson{"Ok", AutoLogin{"Login done"}}, nil
 	default:
 		payload := errorMessages{status}
 		return ResponseJson{"Ok", payload}, nil

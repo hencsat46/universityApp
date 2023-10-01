@@ -218,3 +218,14 @@ func UserProfile(ctx echo.Context) error {
 
 	return ctx.JSON(200, jsonData)
 }
+
+func AutoLogin(ctx echo.Context) error {
+
+	jsonData, err := jsonResponse.Response(make(map[string]string), "autoLogin")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return ctx.JSON(200, jsonData)
+}

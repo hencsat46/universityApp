@@ -153,6 +153,25 @@ function setUniversity(element) {
     
 }
 
+async function autoLogin() {
+    const request = new Request("http://localhost:3000", {
+        method: "GET",
+        mode: "cors",
+        headers : {
+            "Token": getToken(),
+        }
+    })
+
+    const response = await (await fetch(request)).json()
+
+    if (response.Status = "Ok" && response.Payload.Message == "Login done") {
+        document.querySelector(".sign-btns").style.display = "none"
+        document.querySelector(".username-icon").style.display = "flex"
+    }
+}
+
+autoLogin()
+
 function submitUniversity(element) {
     const pointsString = element.parentNode.querySelector(".docs-input").value
     
