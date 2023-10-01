@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+}
+
+body {
+    background: #3a3939;
+    color: black;
+    animation: 2s infinite alternate slidein;
+    filter: blur(0px);
+    min-height: 100%;
+}
+
+header {
+    position: relative;
+    width: 100%;
+    padding: 20px 100px;
+    background: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    filter: blur(0px);
+    font-weight: 700;
+    margin-bottom: 20px;
+    height: 90px;
+}
+
+.students-choice {
+    font-size: 19px;
+}
+
+.students-choice:hover {
+    text-decoration: underline;
+}
+
+.university-choice:hover {
+    text-decoration: underline;
+}
+
+.university-choice {
+    font-size: 19px;
+}
+
+.links a {
+    padding: 0 10px;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+}
+
+.wrapper {
+    width: 1100px;
+    margin: 0 auto;
+}
+
+.user-photo img {
+    width: 200px;
+}
+
+.user-bio {
+    display: flex;
+}
+
+.user-data {
+    margin-left: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.user-name, .user-surname, .user-university, .univeristy-status {
+    font-size: 30px;
+    color: white;
+}
+

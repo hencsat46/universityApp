@@ -69,6 +69,8 @@ async function signInButton(element) {
     if ('Token' in response.Payload) {
         setCookie("")
         setCookie(response.Payload.Token)
+        document.querySelector(".sign-btns").style.display = "none"
+        document.querySelector(".username-icon").style.display = "flex"
     }
 }
 

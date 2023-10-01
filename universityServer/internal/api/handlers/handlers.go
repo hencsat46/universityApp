@@ -9,7 +9,6 @@ import (
 	jsonResponse "universityServer/internal/pkg/responseJson"
 	usecase "universityServer/internal/tools/handle"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -124,17 +123,13 @@ func GetUniversity(ctx echo.Context) error {
 
 func AddStudent(ctx echo.Context) error {
 	requestMap := make(map[string]string)
-	claims := jwt.MapClaims{}
-	secretKey, err := jwtActions.GetKey()
+
+	username, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
+
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
-	jwt.ParseWithClaims(ctx.Request().Header["Token"][0], claims, func(token *jwt.Token) (interface{}, error) {
-
-		return []byte(secretKey), nil
-	})
-
-	username := fmt.Sprint(claims["iss"])
 
 	err = json.NewDecoder(ctx.Request().Body).Decode(&requestMap)
 
@@ -191,6 +186,30 @@ func GetRecords(ctx echo.Context) error {
 	}
 
 	jsonData, err := jsonResponse.Response(records, "studentRecords")
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return ctx.JSON(200, jsonData)
+}
+
+func UserProfile(ctx echo.Context) error {
+	token, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	responseMap, err := usecase.GetStudentInfo(token)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	jsonData, err := jsonResponse.Response(responseMap, "profile")
 
 	if err != nil {
 		fmt.Println(err)

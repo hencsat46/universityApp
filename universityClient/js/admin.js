@@ -19,16 +19,20 @@ async function signInButton(element) {
         const newHtml = `
             <ul class="actions">
                 <li class="delete-students">
-                    <button class="del-st">Удалить</button>
+                    <button class="action-button">Удалить</button>
                     <div class="students-text">Удалить записи о студентах</div>
                 </li>
                 <li class="delete-records">
-                    <button class="del-rec">Удалить</button>
+                    <button class="action-button">Удалить</button>
                     <div class="records-text">Удалить записи с документами</div>
                 </li>
                 <li class="stop-submission">
-                    <button class="stop-sub">Остановить</button>
+                    <button class="action-button" onclick="changeSubmission(this)">Остановить</button>
                     <div class="sub-text">Остановить подачу документов</div>
+                </li>
+                <li class="start-submission">
+                    <button class="action-button" onclick="changeSubmission(this)">Продолжить</button>
+                    <div class="st-sub-text">Продолжить подачу документов</div>
                 </li>
             </ul>
         `
@@ -37,5 +41,27 @@ async function signInButton(element) {
         document.body.append(newDiv)
 
     }
+
+}
+
+async function changeSubmission(element) {
+    console.log(element.innerText)
+
+    const jsonData = {
+        Status: element.innerText,
+    }
+
+    console.log(jsonData)
+    const request = new Request("http://localhost:3000/stopSend", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonData),
+    })
+
+    fetch(request)
+
 
 }

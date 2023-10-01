@@ -16,14 +16,6 @@ li {
     display: flex;
 }
 
-.del-st {
-    margin-right: 5px;
-}
-
-.del-rec {
-    margin-right: 5px;
-}
-
-.stop-sub {
+.action-button {
     margin-right: 5px;
 }

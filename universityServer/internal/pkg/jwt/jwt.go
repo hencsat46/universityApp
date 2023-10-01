@@ -89,3 +89,20 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 		}
 	})
 }
+
+func GetUsernameFromToken(token string) (string, error) {
+	claims := jwt.MapClaims{}
+	secretKey, err := GetKey()
+	if err != nil {
+		return "", err
+	}
+	jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+
+		return []byte(secretKey), nil
+	})
+
+	username := fmt.Sprint(claims["iss"])
+
+	return username, nil
+
+}

@@ -7,14 +7,14 @@
 }
 
 body {
-    background: #3a3939;
+    background: #5b5959;
     color: black;
     animation: 2s infinite alternate slidein;
     min-height: 100%;
 }
 
 .wrapper {
-    background: #3a3939;
+    background: #5b5959;
 }
 
 .sign-btns {
@@ -38,4 +38,40 @@ header {
     align-items: center;
     filter: blur(0px);
     height: 90px;
+    margin-bottom: 30px;
 }
+
+ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #5b5959;
+}
+
+table {
+    border: 1px solid white;
+    border-collapse: collapse;
+}
+
+tr {
+    border: 1px solid white;
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid white;
+    border-collapse: collapse;
+}
+
+table tr td {
+    padding: 15px 20px;
+    color: white;
+    font-size: 20px;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+}
+

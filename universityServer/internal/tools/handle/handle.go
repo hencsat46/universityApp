@@ -3,6 +3,7 @@ package handle
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	database "universityServer/internal/database"
 	jwtToken "universityServer/internal/pkg/jwt"
 )
@@ -48,14 +49,16 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 	err := database.Authorization(username, password)
 
 	if err != nil {
-		return "", nil
+		fmt.Println(err)
+		return "", err
 	}
 
 	userId, err := database.GetId(username)
 	if err != nil {
-		return "", nil
+		fmt.Println(err)
+		return "", err
 	}
-
+	fmt.Println(username)
 	if username == "admin" {
 		fmt.Println("aaaaaaaaaaaaa")
 		return "", nil
@@ -142,16 +145,41 @@ func ParseRecords() (map[string]string, error) {
 }
 
 func EditSend(dataMap map[string]string) error {
-	value, ok := dataMap["status"]
-
-	if !ok && value != "false" && value != "true" {
+	value, ok := dataMap["Status"]
+	if !ok && value != "Продолжить" && value != "Остановить" {
 		return errors.New("invalid json")
 	}
+	var status bool
+	switch value {
+	case "Продолжить":
+		status = true
+		break
+	case "Остановить":
+		status = false
+		break
+	}
 
-	err := database.ChangeStatus(value)
+	err := database.ChangeStatus(strconv.FormatBool(status))
 
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func GetStudentInfo(username string) (map[string]string, error) {
+	studentData, err := database.GetInfoDb(username)
+
+	if err != nil {
+		fmt.Println(err)
+		return make(map[string]string), err
+	}
+
+	studentMap := make(map[string]string)
+	studentMap["Username"] = studentData[0]
+	studentMap["Name"] = studentData[1]
+	studentMap["Surname"] = studentData[2]
+	studentMap["University"] = studentData[3]
+
+	return studentMap, nil
 }

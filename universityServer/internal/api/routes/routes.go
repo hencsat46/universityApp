@@ -16,6 +16,7 @@ func Routes(e *echo.Echo) {
 	e.POST("/addStudent", jwt.ValidationJWT(handlers.AddStudent))
 	e.GET("/records", handlers.GetRecords)
 	e.POST("/stopSend", handlers.EditSend)
+	e.GET("/profile", handlers.UserProfile)
 	//e.GET("/check", createJwt)
 
 }

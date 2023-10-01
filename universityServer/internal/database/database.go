@@ -219,17 +219,21 @@ func Authorization(username string, password string) error {
 	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM login('%s', '%s');", username, password))
 
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
 	response.Next()
-	var nameData, passData string
+	var status string
 
-	response.Scan(&nameData, &passData)
+	response.Scan(&status)
+	fmt.Println(status)
 
-	fmt.Println(nameData, passData)
+	if status == "0" {
+		return nil
+	}
 
-	return nil
+	return errors.New("wrong login or password")
 
 }
 
@@ -249,4 +253,26 @@ func GetKey(conn *pgx.Conn) (string, error) {
 	}
 
 	return stringKey, nil
+}
+
+func GetInfoDb(username string) ([]string, error) {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+
+	studentResponse, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM get_user_data('%s')", username))
+
+	if err != nil {
+		fmt.Println(err)
+		return make([]string, 0), err
+	}
+
+	studentData := make([]string, 4)
+
+	studentResponse.Next()
+	studentResponse.Scan(&studentData[0], &studentData[1], &studentData[2], &studentData[3])
+
+	fmt.Println(studentData)
+
+	return studentData, nil
+
 }

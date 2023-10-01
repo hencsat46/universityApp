@@ -42,6 +42,13 @@ type Records struct {
 	Message [][]string
 }
 
+type Profile struct {
+	Username   string
+	Name       string
+	Surname    string
+	University string
+}
+
 func Response(data map[string]string, status string) (ResponseJson, error) {
 
 	switch status {
@@ -75,8 +82,13 @@ func Response(data map[string]string, status string) (ResponseJson, error) {
 			recordsArr[i] = strings.Split(recordsString[i], "|")
 		}
 		records := Records{recordsArr}
-		responseJson := ResponseJson{"Ok", records}
-		return responseJson, nil
+		return ResponseJson{"Ok", records}, nil
+	case "profile":
+		if data["University"] == "" {
+			data["University"] = "Вы не подавали документы"
+		}
+		payload := Profile{data["Username"], data["Name"], data["Surname"], data["University"]}
+		return ResponseJson{"Ok", payload}, nil
 	default:
 		payload := errorMessages{status}
 		return ResponseJson{"Ok", payload}, nil
