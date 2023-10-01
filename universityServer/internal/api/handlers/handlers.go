@@ -161,6 +161,27 @@ func TokenOk(ctx echo.Context) error {
 	return nil
 }
 
+func EditSend(ctx echo.Context) error {
+	requestMap := make(map[string]string)
+
+	err := json.NewDecoder(ctx.Request().Body).Decode(&requestMap)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	err = usecase.EditSend(requestMap)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+
+}
+
 func GetRecords(ctx echo.Context) error {
 	records, err := usecase.ParseRecords()
 

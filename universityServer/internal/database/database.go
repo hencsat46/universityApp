@@ -120,7 +120,7 @@ func GetRecords() ([][]string, error) {
 func AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
-	fmt.Println(fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
+
 	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
 	if err != nil {
 		return err
@@ -135,6 +135,36 @@ func AddStudentRecord(studentName string, studentUniversity string, studentPoint
 		return nil
 	}
 	return errors.New("student or university doesn't exists")
+}
+
+func ChangeStatus(status string) error {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+
+	_, err := conn.Query(context.Background(), fmt.Sprintf("UPDATE records_status SET status = '%s';", status))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetStatus() (bool, error) {
+	conn := ConnectDB()
+	defer conn.Close(context.Background())
+
+	queryStatus, err := conn.Query(context.Background(), "SELECT status FROM records_status;")
+	queryStatus.Next()
+	if err != nil {
+		return false, err
+	}
+	var stringStatus string
+	queryStatus.Scan(stringStatus)
+	status, _ := strconv.ParseBool(stringStatus)
+	defer queryStatus.Close()
+	return status, nil
+
 }
 
 func GetId(username string) (string, error) {

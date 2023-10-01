@@ -73,7 +73,16 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 func ParseStudentRequest(data map[string]string) error {
 	username, studentUniversity, points := data["Username"], data["University"], data["Points"]
 
-	err := database.AddStudentRecord(username, studentUniversity, points)
+	status, err := database.GetStatus()
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	if status {
+		err = database.AddStudentRecord(username, studentUniversity, points)
+	}
 
 	if err != nil {
 		fmt.Println(err)
@@ -130,4 +139,19 @@ func ParseRecords() (map[string]string, error) {
 
 	return recordsMap, nil
 
+}
+
+func EditSend(dataMap map[string]string) error {
+	value, ok := dataMap["status"]
+
+	if !ok && value != "false" && value != "true" {
+		return errors.New("invalid json")
+	}
+
+	err := database.ChangeStatus(value)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
