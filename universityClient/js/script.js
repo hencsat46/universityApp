@@ -154,11 +154,13 @@ function setUniversity(element) {
 }
 
 async function autoLogin() {
+    const token = getToken()
+    if (token == null) return
     const request = new Request("http://localhost:3000", {
         method: "GET",
         mode: "cors",
         headers : {
-            "Token": getToken(),
+            "Token": token,
         }
     })
 
