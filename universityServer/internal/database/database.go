@@ -10,7 +10,7 @@ import (
 	pgx "github.com/jackc/pgx/v5"
 )
 
-const DB_URL = "postgresql://postgres:forstudy@localhost:5432/universityDB"
+const DB_URL = "postgresql://postgres:forstudy@localhost:5432/universitydb"
 
 func ConnectDB() *pgx.Conn {
 	config, _ := pgx.ParseConfig(DB_URL)

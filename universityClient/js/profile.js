@@ -21,12 +21,19 @@ async function getProfile() {
                 <div class="user-university">
                     ${response.Payload.University}
                 </div>
+                <button onclick="quit()">Выйти</button>
             </div>
         </div>
     
     `
 
     document.querySelector(".wrapper").innerHTML = newHtml
+}
+
+function quit() {
+    browser.cookies.remove({
+        name: "Token"
+    })
 }
 
 getProfile()
