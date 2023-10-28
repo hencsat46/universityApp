@@ -31,9 +31,7 @@ async function getProfile() {
 }
 
 function quit() {
-    browser.cookies.remove({
-        name: "Token"
-    })
+    document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
 getProfile()
