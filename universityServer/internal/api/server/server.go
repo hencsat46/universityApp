@@ -16,5 +16,5 @@ func Run() {
 	}))
 
 	router.Routes(e)
-	e.Start(":3000")
+	e.Start("0.0.0.0:3000")
 }

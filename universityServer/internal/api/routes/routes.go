@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"context"
+	"log"
 	handlers "universityServer/internal/api/handlers"
+	db "universityServer/internal/database"
 	jwt "universityServer/internal/pkg/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -18,6 +21,13 @@ func Routes(e *echo.Echo) {
 	e.POST("/stopSend", handlers.EditSend)
 	e.GET("/profile", handlers.UserProfile)
 	e.GET("/", jwt.ValidationJWT(handlers.AutoLogin))
-	//e.GET("/check", createJwt)
+	e.GET("/ping", func(ctx echo.Context) error {
+		conn := db.ConnectDB()
+		err := conn.Ping(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+		return ctx.String(200, "i fucked discord's mothers and fathers")
+	})
 
 }
