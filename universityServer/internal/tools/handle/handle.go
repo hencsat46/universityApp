@@ -3,19 +3,17 @@ package handle
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	database "universityServer/internal/database"
+	"universityServer/internal/models"
 	jwtToken "universityServer/internal/pkg/jwt"
 )
 
-func ParseUniversityJson(number int) (map[string]string, error) {
-	result, err := database.GetUniversity(number)
-	if err != nil {
-		fmt.Println(err)
-		return result, nil
-	}
-
-	return result, nil
+func ParseUniversityJson(number int) []models.Universities {
+	result := database.ReadUniversity(number)
+	log.Println(result)
+	return result
 
 }
 

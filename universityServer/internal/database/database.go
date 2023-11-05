@@ -8,36 +8,11 @@ import (
 	"os"
 	"strconv"
 
+	db "universityServer/internal/migrations"
+	"universityServer/internal/models"
+
 	pgx "github.com/jackc/pgx/v5"
 )
-
-type Users struct {
-	user_id         uint `gorm: "primary key"`
-	username        string
-	passwd          string
-	student_name    string
-	student_surname string
-}
-
-type Universities struct {
-	uni_id      uint `gorm: "primary key"`
-	uni_name    string
-	uni_des     string
-	uni_img     string
-	min_point   int
-	seats_count int
-}
-
-type Students_records struct {
-	record_id          uint `gorm: "primary key"`
-	student_id         int
-	student_university int
-	student_points     int
-}
-
-type Records_status struct {
-	status bool
-}
 
 func ConnectDB() *pgx.Conn {
 	config, _ := pgx.ParseConfig(os.Getenv("DB_URL"))
@@ -50,6 +25,18 @@ func ConnectDB() *pgx.Conn {
 	}
 
 	return conn
+}
+
+func ReadUniversity(border int) []models.Universities {
+	uni := make([]models.Universities, 2)
+
+	log.Println(db.DB)
+	if err := db.DB.Offset(border).Limit(2).Find(&uni).Error; err != nil {
+		log.Println(err)
+	}
+
+	return uni
+
 }
 
 func GetUniversity(border int) (map[string]string, error) {

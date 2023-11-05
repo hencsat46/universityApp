@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	database "universityServer/internal/database"
 	jwtActions "universityServer/internal/pkg/jwt"
@@ -93,31 +94,42 @@ func GetRemain(ctx echo.Context) error {
 
 func GetUniversity(ctx echo.Context) error {
 
-	dataMap := make(map[string]int)
+	// dataMap := make(map[string]int)
 
-	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-	if err != nil {
-		fmt.Println(err)
-		return err
+	// err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
+
+	type body struct {
+		Order int
+	}
+	var temp body
+
+	if err := ctx.Bind(&temp); err != nil {
+		ctx.String(http.StatusBadRequest, "jopa")
 	}
 
-	result, err := usecase.ParseUniversityJson(dataMap["order"])
+	log.Println(temp)
 
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+	result := usecase.ParseUniversityJson(temp.Order)
 
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	response, err := jsonResponse.Response(result, "university")
-	if err != nil {
-		fmt.Println(err)
-	}
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
+	// response, err := jsonResponse.Response(result, "university")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 	ctx.Response().Header().Set("Content-Type", "application/json")
-	return ctx.JSON(http.StatusOK, response)
+	return ctx.JSON(http.StatusOK, result)
 
 }
 

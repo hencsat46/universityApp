@@ -19,12 +19,6 @@ CREATE TABLE users (
 
 );
 
-CREATE TABLE jwtKey (
-
-    secretkey TEXT
-
-);
-
 CREATE TABLE students_records (
 
 	record_id SERIAL PRIMARY KEY,
