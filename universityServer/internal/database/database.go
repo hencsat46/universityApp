@@ -31,7 +31,7 @@ func ReadUniversity(border int) []models.Universities {
 	uni := make([]models.Universities, 2)
 
 	log.Println(db.DB)
-	if err := db.DB.Offset(border).Limit(2).Find(&uni).Error; err != nil {
+	if err := db.DB.Offset(border).Limit(2).Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
 		log.Println(err)
 	}
 

@@ -12,6 +12,7 @@ import (
 
 func ParseUniversityJson(number int) []models.Universities {
 	result := database.ReadUniversity(number)
+
 	log.Println(result)
 	return result
 

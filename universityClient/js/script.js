@@ -246,11 +246,12 @@ async function makeJsonUniversity() {
         const universityOrder = universityCount
         const requestJson = `{"order": ${universityOrder}}`
         const response = getUniversity("http://localhost:3000/getUniversity", requestJson)
-        const universityObject = await response
-        const firstUniversity = universityObject.Payload.FirstUni.split("|");
-        const secondUniversity = universityObject.Payload.SecondUni.split("|");
+        const universityObject = (await response).Payload
+        
+        console.log(universityObject)
 
-        makeUniversityElem(firstUniversity[0], firstUniversity[1], firstUniversity[2], secondUniversity[0], secondUniversity[1], secondUniversity[2])
+
+        makeUniversityElem(universityObject[0].Uni_name, universityObject[0].Uni_des, universityObject[0].Uni_img, universityObject[1].Uni_name, universityObject[1].Uni_des, universityObject[1].Uni_img)
         
     }
     flag = true
