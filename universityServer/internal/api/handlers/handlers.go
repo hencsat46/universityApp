@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	database "universityServer/internal/database"
+	"universityServer/internal/models"
 	jwtActions "universityServer/internal/pkg/jwt"
 	jsonResponse "universityServer/internal/pkg/responseJson"
 	usecase "universityServer/internal/tools/handle"
@@ -94,42 +94,15 @@ func GetRemain(ctx echo.Context) error {
 
 func GetUniversity(ctx echo.Context) error {
 
-	// dataMap := make(map[string]int)
+	var requestBody GetUniversityDTO = GetUniversityDTO{-1}
 
-	// err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
-
-	type body struct {
-		Order int
-	}
-	var temp body
-
-	if err := ctx.Bind(&temp); err != nil {
-		ctx.String(http.StatusBadRequest, "jopa")
+	if err := ctx.Bind(&requestBody); err != nil || requestBody.Order == -1 {
+		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
 
-	log.Println(temp)
+	result := usecase.ParseUniversityJson(requestBody.Order)
 
-	result := usecase.ParseUniversityJson(temp.Order)
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
-	// response, err := jsonResponse.Response(result, "university")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	ctx.Response().Header().Set("Content-Type", "application/json")
-	return ctx.JSON(http.StatusOK, result)
+	return ctx.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: result})
 
 }
 

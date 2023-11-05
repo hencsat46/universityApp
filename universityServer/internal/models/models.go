@@ -27,3 +27,8 @@ type Students_records struct {
 type Records_status struct {
 	Status bool
 }
+
+type Response struct {
+	Status  int
+	Payload interface{}
+}
