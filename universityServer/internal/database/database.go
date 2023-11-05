@@ -5,15 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	pgx "github.com/jackc/pgx/v5"
 )
 
-const DB_URL = "postgresql://postgres:forstudy@postgres1:5432/universitydb"
-
 func ConnectDB() *pgx.Conn {
-	config, _ := pgx.ParseConfig(DB_URL)
+	config, _ := pgx.ParseConfig(os.Getenv("DB_URL"))
 
 	conn, err := pgx.ConnectConfig(context.Background(), config)
 
@@ -235,24 +234,6 @@ func Authorization(username string, password string) error {
 
 	return errors.New("wrong login or password")
 
-}
-
-func GetKey(conn *pgx.Conn) (string, error) {
-	key, err := conn.Query(context.Background(), "SELECT secretKey FROM jwtKey;")
-
-	if err != nil {
-		return "", err
-	}
-	defer key.Close()
-
-	key.Next()
-	var stringKey string
-	err = key.Scan(&stringKey)
-	if err != nil {
-		return "", err
-	}
-
-	return stringKey, nil
 }
 
 func GetInfoDb(username string) ([]string, error) {

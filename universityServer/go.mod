@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jackc/pgx/v5 v5.4.3
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.1
 )
 

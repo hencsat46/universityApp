@@ -3,8 +3,9 @@ package jwtActions
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"time"
-	db "universityServer/internal/database"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -30,11 +31,7 @@ func CreateJWT(username string, id string, expTime int) (string, error) {
 		time.Now().Unix(),
 	})
 
-	key, err := GetKey()
-
-	if err != nil {
-		return "", err
-	}
+	key := os.Getenv("JWT_KEY")
 
 	tokenString, err := token.SignedString([]byte(key))
 
@@ -45,36 +42,23 @@ func CreateJWT(username string, id string, expTime int) (string, error) {
 
 }
 
-func GetKey() (string, error) {
-	key, err := db.GetKey(db.ConnectDB())
-
-	if err != nil {
-		return "", err
-	}
-	return key, nil
-}
-
 func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 	return echo.HandlerFunc(func(c echo.Context) error {
 		if c.Request().Header["Token"] != nil && c.Request().Header["Token"][0] != "null" {
 			token, err := jwt.Parse(c.Request().Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
 				_, ok := t.Method.(*jwt.SigningMethodHMAC)
 				if !ok {
-					fmt.Println("Токен говно")
+					log.Println("Токен говно")
 					return nil, errors.New("not authorized")
 				}
-				key, err := GetKey()
-				if err != nil {
-					fmt.Println(err)
-					return nil, err
-				}
+				key := os.Getenv("JWT_KEY")
 
 				return []byte(key), nil
 
 			})
 
 			if err != nil {
-				fmt.Println(err, "хуйня")
+				log.Println(err, "хуйня")
 				return err
 			}
 
@@ -84,7 +68,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 			}
 			return nil
 		} else {
-			fmt.Println("no tokens")
+			log.Println("no tokens")
 			return nil
 		}
 	})
@@ -92,10 +76,8 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 
 func GetUsernameFromToken(token string) (string, error) {
 	claims := jwt.MapClaims{}
-	secretKey, err := GetKey()
-	if err != nil {
-		return "", err
-	}
+	secretKey := os.Getenv("JWT_KEY")
+
 	jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 
 		return []byte(secretKey), nil
