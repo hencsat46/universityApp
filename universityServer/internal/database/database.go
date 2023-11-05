@@ -11,13 +11,41 @@ import (
 	pgx "github.com/jackc/pgx/v5"
 )
 
+type Users struct {
+	user_id         uint `gorm: "primary key"`
+	username        string
+	passwd          string
+	student_name    string
+	student_surname string
+}
+
+type Universities struct {
+	uni_id      uint `gorm: "primary key"`
+	uni_name    string
+	uni_des     string
+	uni_img     string
+	min_point   int
+	seats_count int
+}
+
+type Students_records struct {
+	record_id          uint `gorm: "primary key"`
+	student_id         int
+	student_university int
+	student_points     int
+}
+
+type Records_status struct {
+	status bool
+}
+
 func ConnectDB() *pgx.Conn {
 	config, _ := pgx.ParseConfig(os.Getenv("DB_URL"))
 
 	conn, err := pgx.ConnectConfig(context.Background(), config)
 
 	if err != nil {
-		log.Fatal("Cannot to connect to database", err)
+		log.Fatal("Cannot to connect to database\n", err)
 		return nil
 	}
 
