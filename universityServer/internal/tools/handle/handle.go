@@ -32,9 +32,7 @@ func checkEmpty(username string, password string) bool {
 	return true
 }
 
-func SignIn(user map[string]string, expTime int) (string, error) {
-
-	username, password := user["Username"], user["Password"]
+func SignIn(username string, password string, expTime int) (string, error) {
 
 	check := checkEmpty(username, password)
 
@@ -42,10 +40,10 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 		return "", errors.New("username or password is empty")
 	}
 
-	err := database.Authorization(username, password)
+	err := database.SignIn(username, password)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", err
 	}
 
@@ -54,9 +52,10 @@ func SignIn(user map[string]string, expTime int) (string, error) {
 		fmt.Println(err)
 		return "", err
 	}
+
 	fmt.Println(username)
 	if username == "admin" {
-		fmt.Println("aaaaaaaaaaaaa")
+		log.Println("Is admin")
 		return "", nil
 	}
 

@@ -14,11 +14,11 @@ import (
 type jwtClaims struct {
 	jwt.StandardClaims
 	username string
-	id       string
+	id       uint
 	int64
 }
 
-func CreateJWT(username string, id string, expTime int) (string, error) {
+func CreateJWT(username string, id uint, expTime int) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
 		jwt.StandardClaims{

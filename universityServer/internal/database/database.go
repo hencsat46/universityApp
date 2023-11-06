@@ -138,22 +138,31 @@ func GetStatus() (bool, error) {
 
 }
 
-func GetId(username string) (string, error) {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
+func GetId(username string) (uint, error) {
 
-	var userId string
+	var userModel models.Users
 
-	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT user_id FROM users WHERE username = '%s';", username))
-	if err != nil {
-		return "", err
+	if err := db.DB.Model(&models.Users{Username: username}).Find(&userModel).Error; err != nil {
+		return 0, err
 	}
-	response.Next()
-	err = response.Scan(&userId)
-	if err != nil {
-		return "", err
-	}
-	return userId, nil
+
+	return userModel.User_id, nil
+
+	// conn := ConnectDB()
+	// defer conn.Close(context.Background())
+
+	// var userId string
+
+	// response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT user_id FROM users WHERE username = '%s';", username))
+	// if err != nil {
+	// 	return "", err
+	// }
+	// response.Next()
+	// err = response.Scan(&userId)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// return userId, nil
 }
 
 func SetUser(username string, password string, studentName string, studentSurname string) error {
@@ -234,6 +243,20 @@ func Authorization(username string, password string) error {
 	}
 
 	return errors.New("wrong login or password")
+
+}
+
+func SignIn(username, password string) error {
+	var result int64
+
+	if err := db.DB.Model(&models.Users{}).Where(&models.Users{Username: username, Passwd: password}).Count(&result).Error; err != nil {
+		return err
+	}
+
+	if result != 1 {
+		return errors.New("wrong username or password")
+	}
+	return nil
 
 }
 

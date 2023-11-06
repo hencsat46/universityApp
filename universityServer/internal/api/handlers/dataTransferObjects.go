@@ -10,3 +10,8 @@ type SignUpDTO struct {
 	Username       string `json:"Username"`
 	Password       string `json:"Password"`
 }
+
+type SignInDTO struct {
+	Username string `json:"Username"`
+	Password string `json:"Password"`
+}

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	database "universityServer/internal/database"
 	"universityServer/internal/models"
 	jwtActions "universityServer/internal/pkg/jwt"
@@ -41,33 +43,55 @@ func SignUp(ctx echo.Context) error {
 }
 
 func SignIn(ctx echo.Context) error {
-	dataMap := make(map[string]string)
 
-	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-	fmt.Println(dataMap)
-	if err != nil {
-		return err
+	var requestBody SignInDTO = SignInDTO{"", ""}
+	var expTime int
+
+	if t, err := strconv.Atoi(os.Getenv("EXP_TIME")); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, models.Response{Status: http.StatusInternalServerError, Payload: "Internal server error"})
+	} else {
+		expTime = t
 	}
 
-	expTime := 30
-
-	token, err := usecase.SignIn(dataMap, expTime)
-
-	if err != nil {
-		return err
+	if err := ctx.Bind(&requestBody); err != nil {
+		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "Wrong data"})
 	}
 
-	responseMap := make(map[string]string)
-	responseMap["Token"] = token
-	fmt.Println(responseMap)
-	jsonStruct, err := jsonResponse.Response(responseMap, "sign in")
-
-	if err != nil {
-		fmt.Println(err)
-		return err
+	if token, err := usecase.SignIn(requestBody.Username, requestBody.Password, expTime); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, models.Response{Status: http.StatusInternalServerError, Payload: "Internal server error"})
+	} else {
+		return ctx.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: token})
 	}
 
-	return ctx.JSON(http.StatusOK, jsonStruct)
+	//test on front
+
+	// dataMap := make(map[string]string)
+
+	// err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
+	// fmt.Println(dataMap)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// expTime := 30
+
+	// token, err := usecase.SignIn(dataMap, expTime)
+
+	// if err != nil {
+	// 	return err
+	// }
+
+	// responseMap := make(map[string]string)
+	// responseMap["Token"] = token
+	// fmt.Println(responseMap)
+	// jsonStruct, err := jsonResponse.Response(responseMap, "sign in")
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
+
+	// return ctx.JSON(http.StatusOK, jsonStruct)
 }
 
 func GetRemain(ctx echo.Context) error {
