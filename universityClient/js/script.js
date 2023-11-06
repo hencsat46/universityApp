@@ -213,7 +213,7 @@ let remained = 0
 async function getRemain() {
     const response = await remainRequest("http://localhost:3000/getRemain")
     
-    remained = response.Payload.Message
+    remained = response.Payload
 
     console.log(remained)
     await access()

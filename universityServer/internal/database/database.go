@@ -39,60 +39,69 @@ func ReadUniversity(border int) []models.Universities {
 
 }
 
-func GetUniversity(border int) (map[string]string, error) {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
+// func GetUniversity(border int) (map[string]string, error) {
+// 	conn := ConnectDB()
+// 	defer conn.Close(context.Background())
 
-	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+2))
+// 	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+2))
 
-	universityMap := make(map[string]string)
-	if err != nil {
-		return universityMap, err
-	}
-	for i := 0; result.Next(); i++ {
-		tempArray := make([]string, 3)
+// 	universityMap := make(map[string]string)
+// 	if err != nil {
+// 		return universityMap, err
+// 	}
+// 	for i := 0; result.Next(); i++ {
+// 		tempArray := make([]string, 3)
 
-		err = result.Scan(&tempArray[0], &tempArray[1], &tempArray[2])
-		if err != nil {
-			return universityMap, err
-		}
-		tempString := fmt.Sprintf("%s|%s|%s", tempArray[0], tempArray[1], tempArray[2])
-		universityMap[strconv.Itoa(i)] = tempString
-	}
+// 		err = result.Scan(&tempArray[0], &tempArray[1], &tempArray[2])
+// 		if err != nil {
+// 			return universityMap, err
+// 		}
+// 		tempString := fmt.Sprintf("%s|%s|%s", tempArray[0], tempArray[1], tempArray[2])
+// 		universityMap[strconv.Itoa(i)] = tempString
+// 	}
 
-	result.Close()
-	universityMap["2"], err = GetRemain()
-	if err != nil {
-		return universityMap, err
-	}
+// 	result.Close()
+// 	universityMap["2"], err = GetRemain()
+// 	if err != nil {
+// 		return universityMap, err
+// 	}
 
-	return universityMap, nil
+// 	return universityMap, nil
 
-}
+// }
 
-func GetRemain() (string, error) {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
-	remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
-	defer func() {
-		if err == nil {
-			return
-		}
-		remained.Close()
-	}()
+func GetRemain() (int64, error) {
 
-	if err != nil {
-		return "", err
-	}
-	var remainedString string
-	remained.Next()
-	err = remained.Scan(&remainedString)
+	var remain int64
 
-	if err != nil {
-		return "", err
+	if err := db.DB.Model(&models.Universities{}).Count(&remain).Error; err != nil {
+		log.Println(err)
+		return -1, err
 	}
 
-	return remainedString, nil
+	return remain, nil
+
+	// defer conn.Close(context.Background())
+	// remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
+	// defer func() {
+	// 	if err == nil {
+	// 		return
+	// 	}
+	// 	remained.Close()
+	// }()
+
+	// if err != nil {
+	// 	return "", err
+	// }
+	// var remainedString string
+	// remained.Next()
+	// err = remained.Scan(&remainedString)
+
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	//return remainedString, nil
 
 }
 

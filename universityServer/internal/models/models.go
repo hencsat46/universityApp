@@ -9,8 +9,8 @@ type Users struct {
 }
 
 type Universities struct {
-	Uni_id      uint `gorm:"primaryKey"`
-	Uni_name    string
+	Uni_id      uint   `gorm:"primaryKey"`
+	Uni_name    string `gorm:"unique"`
 	Uni_des     string
 	Uni_img     string
 	Min_point   int

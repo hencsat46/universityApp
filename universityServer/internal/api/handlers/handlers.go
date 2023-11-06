@@ -74,22 +74,13 @@ func SignIn(ctx echo.Context) error {
 
 func GetRemain(ctx echo.Context) error {
 	remain, err := database.GetRemain()
+
 	if err != nil {
-		jsonStruct, err := jsonResponse.Response(make(map[string]string), err.Error())
-		if err != nil {
-			fmt.Println(err.Error())
-			return err
-		}
-		return ctx.JSON(500, jsonStruct)
+		return ctx.JSON(http.StatusInternalServerError, models.Response{Status: http.StatusInternalServerError, Payload: "database error"})
 	}
-	responseMap := make(map[string]string)
-	responseMap["remain"] = remain
-	jsonStruct, err := jsonResponse.Response(responseMap, "remain")
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-	return ctx.JSON(200, jsonStruct)
+
+	return ctx.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: remain})
+
 }
 
 func GetUniversity(ctx echo.Context) error {

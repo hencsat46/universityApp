@@ -18,13 +18,10 @@ func ParseUniversityJson(number int) []models.Universities {
 
 }
 
-func GetRemain() (string, error) {
+func GetRemain() (int64, error) {
 	remain, err := database.GetRemain()
-	if err != nil {
-		return "", err
-	}
 
-	return remain, nil
+	return remain, err
 }
 
 func checkEmpty(username string, password string) bool {

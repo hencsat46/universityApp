@@ -27,7 +27,7 @@ func Routes(e *echo.Echo) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		return ctx.String(200, "i fucked discord's mothers and fathers")
+		return ctx.String(200, "haha")
 	})
 
 }
