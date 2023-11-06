@@ -15,16 +15,22 @@ import (
 
 func SignUp(ctx echo.Context) error {
 
-	dataMap := make(map[string]string)
+	var requestBody SignUpDTO = SignUpDTO{"", "", "", ""}
 
-	err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-	fmt.Println(dataMap)
-	if err != nil {
-		fmt.Println(err)
-		return err
+	if err := ctx.Bind(&requestBody); err != nil || requestBody.Username == "" || requestBody.Password == "" {
+		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
 
-	err = usecase.SignUp(dataMap)
+	// dataMap := make(map[string]string)
+
+	// err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
+	// fmt.Println(dataMap)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
+
+	err := usecase.SignUp(requestBody.StudentName, requestBody.StudentSurname, requestBody.Username, requestBody.Password)
 	fmt.Println("delivery message")
 	if err != nil {
 		fmt.Println(err)
