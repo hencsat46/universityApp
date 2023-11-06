@@ -33,18 +33,10 @@ func SignUp(ctx echo.Context) error {
 	err := usecase.SignUp(requestBody.StudentName, requestBody.StudentSurname, requestBody.Username, requestBody.Password)
 	fmt.Println("delivery message")
 	if err != nil {
-		fmt.Println(err)
-		return err
+		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "Username in taken"})
 	}
 
-	responseMap := make(map[string]string)
-	jsonStruct, err := jsonResponse.Response(responseMap, "sign up")
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	return ctx.JSON(200, jsonStruct)
+	return ctx.JSON(200, models.Response{Status: http.StatusOK, Payload: "Sign up ok"})
 
 }
 

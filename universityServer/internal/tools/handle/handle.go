@@ -92,8 +92,6 @@ func ParseStudentRequest(data map[string]string) error {
 
 func SignUp(studentName, studentSurname, username, password string) error {
 
-	// studentName, studentSurname, username, password := user["StudentName"], user["StudentSurname"], user["Username"], user["Password"]
-	fmt.Println(username, password)
 	check := checkEmpty(username, password)
 
 	if !check {

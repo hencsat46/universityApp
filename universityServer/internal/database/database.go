@@ -12,6 +12,7 @@ import (
 	"universityServer/internal/models"
 
 	pgx "github.com/jackc/pgx/v5"
+	"gorm.io/gorm"
 )
 
 func ConnectDB() *pgx.Conn {
@@ -39,37 +40,6 @@ func ReadUniversity(border int) []models.Universities {
 
 }
 
-// func GetUniversity(border int) (map[string]string, error) {
-// 	conn := ConnectDB()
-// 	defer conn.Close(context.Background())
-
-// 	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT uni_name, uni_des, uni_img FROM tempUni OFFSET %v LIMIT %v;", border, border+2))
-
-// 	universityMap := make(map[string]string)
-// 	if err != nil {
-// 		return universityMap, err
-// 	}
-// 	for i := 0; result.Next(); i++ {
-// 		tempArray := make([]string, 3)
-
-// 		err = result.Scan(&tempArray[0], &tempArray[1], &tempArray[2])
-// 		if err != nil {
-// 			return universityMap, err
-// 		}
-// 		tempString := fmt.Sprintf("%s|%s|%s", tempArray[0], tempArray[1], tempArray[2])
-// 		universityMap[strconv.Itoa(i)] = tempString
-// 	}
-
-// 	result.Close()
-// 	universityMap["2"], err = GetRemain()
-// 	if err != nil {
-// 		return universityMap, err
-// 	}
-
-// 	return universityMap, nil
-
-// }
-
 func GetRemain() (int64, error) {
 
 	var remain int64
@@ -80,28 +50,6 @@ func GetRemain() (int64, error) {
 	}
 
 	return remain, nil
-
-	// defer conn.Close(context.Background())
-	// remained, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM tempUni;")
-	// defer func() {
-	// 	if err == nil {
-	// 		return
-	// 	}
-	// 	remained.Close()
-	// }()
-
-	// if err != nil {
-	// 	return "", err
-	// }
-	// var remainedString string
-	// remained.Next()
-	// err = remained.Scan(&remainedString)
-
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	//return remainedString, nil
 
 }
 
@@ -209,30 +157,59 @@ func GetId(username string) (string, error) {
 }
 
 func SetUser(username string, password string, studentName string, studentSurname string) error {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
-	var count string
-	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM checkUser('%s');", username))
 
-	if err != nil {
+	user := models.Users{Username: username, Passwd: password, Student_name: studentName, Student_surname: studentSurname}
+	log.Println(user)
+
+	if status, err := checkUser(db.DB, &user); err != nil {
+		return err
+	} else {
+		if status == 1 {
+			return errors.New("this username already exists")
+		}
+	}
+
+	if err := db.DB.Omit("User_id").Create(&user).Error; err != nil {
+		log.Println(err)
 		return err
 	}
 
-	response.Next()
-	response.Scan(&count)
-	if count != "-1" {
-		return errors.New("this user already exists")
-	}
-	response.Close()
+	// conn := ConnectDB()
+	// defer conn.Close(context.Background())
+	// var count string
+	// response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM checkUser('%s');", username))
 
-	response, err = conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd, student_name, student_surname) VALUES ('%s', '%s', '%s', '%s')", username, password, studentName, studentSurname))
+	// if err != nil {
+	// 	return err
+	// }
 
-	if err != nil {
-		return err
-	}
-	defer response.Close()
+	// response.Next()
+	// response.Scan(&count)
+	// if count != "-1" {
+	// 	return errors.New("this user already exists")
+	// }
+	// response.Close()
+
+	// response, err = conn.Query(context.Background(), fmt.Sprintf("INSERT INTO users(username, passwd, student_name, student_surname) VALUES ('%s', '%s', '%s', '%s')", username, password, studentName, studentSurname))
+
+	// if err != nil {
+	// 	return err
+	// }
+	// defer response.Close()
 
 	return nil
+}
+
+func checkUser(database *gorm.DB, model *models.Users) (int64, error) {
+
+	var result int64
+
+	if err := database.Model(&model).Where("username = ?", model.Username).Count(&result).Error; err != nil {
+		return -1, err
+	}
+
+	return result, nil
+
 }
 
 func Authorization(username string, password string) error {
