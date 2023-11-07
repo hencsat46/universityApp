@@ -15,3 +15,8 @@ type SignInDTO struct {
 	Username string `json:"Username"`
 	Password string `json:"Password"`
 }
+
+type UniversityStudent struct {
+	University string `json:"University"`
+	Points     string `json:"Points"`
+}

@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -105,6 +106,11 @@ func GetRemain(ctx echo.Context) error {
 
 }
 
+func Ping(ctx echo.Context) error {
+	usecase.Ping()
+	return nil
+}
+
 func GetUniversity(ctx echo.Context) error {
 
 	var requestBody GetUniversityDTO = GetUniversityDTO{-1}
@@ -120,37 +126,26 @@ func GetUniversity(ctx echo.Context) error {
 }
 
 func AddStudent(ctx echo.Context) error {
-	requestMap := make(map[string]string)
 
 	username, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
-
+	log.Println("hi")
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	err = json.NewDecoder(ctx.Request().Body).Decode(&requestMap)
+	requestBody := UniversityStudent{"", ""}
 
-	if err != nil {
-		fmt.Println(err)
-		return err
+	if err := ctx.Bind(&requestBody); err != nil || requestBody.University == "" || requestBody.Points == "" {
+		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
-
-	requestMap["Username"] = username
-
-	usecase.ParseStudentRequest(requestMap)
-
-	responseJson, err := jsonResponse.Response(requestMap, "add student")
-
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(200, responseJson)
+	log.Println("after bind")
+	usecase.ParseStudentRequest(username, requestBody.University, requestBody.Points)
+	return nil
 }
 
 func TokenOk(ctx echo.Context) error {
-	fmt.Println("hello")
+	fmt.Println("Token Ok")
 	return nil
 }
 

@@ -32,6 +32,16 @@ func checkEmpty(username string, password string) bool {
 	return true
 }
 
+func Ping() (bool, error) {
+	if status, err := database.GetStatus(); err != nil {
+		log.Println(err)
+		return false, err
+	} else {
+		log.Println(status)
+		return status, nil
+	}
+}
+
 func SignIn(username string, password string, expTime int) (string, error) {
 
 	check := checkEmpty(username, password)
@@ -52,7 +62,6 @@ func SignIn(username string, password string, expTime int) (string, error) {
 		fmt.Println(err)
 		return "", err
 	}
-
 	fmt.Println(username)
 	if username == "admin" {
 		log.Println("Is admin")
@@ -68,25 +77,26 @@ func SignIn(username string, password string, expTime int) (string, error) {
 
 }
 
-func ParseStudentRequest(data map[string]string) error {
-	username, studentUniversity, points := data["Username"], data["University"], data["Points"]
-
-	status, err := database.GetStatus()
-
-	if err != nil {
-		fmt.Println(err)
+func ParseStudentRequest(username, studentUniversity, points string) error {
+	log.Println("in parsestudentrequest")
+	if status, err := database.GetStatus(); err != nil {
+		log.Println(err)
 		return err
+	} else {
+		if !status {
+			if err = database.AddStudentRecord(username, studentUniversity, points); err != nil {
+				log.Println(err)
+				return err
+			} else {
+				log.Println("hi")
+				return nil
+			}
+		} else {
+			log.Println(status)
+			return nil
+		}
 	}
 
-	if status {
-		err = database.AddStudentRecord(username, studentUniversity, points)
-	}
-
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	return nil
 }
 
 func SignUp(studentName, studentSurname, username, password string) error {

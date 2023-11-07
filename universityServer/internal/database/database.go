@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	db "universityServer/internal/migrations"
 	"universityServer/internal/models"
@@ -89,23 +88,43 @@ func GetRecords() ([][]string, error) {
 }
 
 func AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
+	log.Println("I'm in addstudentrecord")
+	a, b, err := addRecord(db.DB, studentName, studentUniversity)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(a, b)
 
-	result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
-	if err != nil {
-		return err
-	}
-	var status string
-	result.Next()
-	err = result.Scan(&status)
-	if err != nil {
-		return err
-	}
-	if status == "0" {
-		return nil
-	}
+	// result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
+	// if err != nil {
+	// 	return err
+	// }
+	// var status string
+	// result.Next()
+	// err = result.Scan(&status)
+	// if err != nil {
+	// 	return err
+	// }
+	// if status == "0" {
+	// 	return nil
+	// }
 	return errors.New("student or university doesn't exists")
+}
+
+func addRecord(database *gorm.DB, username string, universityName string) (int, int, error) {
+	var studentId, universityId int
+
+	log.Println("I'm in addRecord")
+
+	if err := database.Model(&models.Users{Username: username}).Find(&studentId).Error; err != nil {
+		return -1, -1, err
+	}
+
+	if err := database.Model(&models.Universities{Uni_name: universityName}).Find(&universityId).Error; err != nil {
+		return -1, -1, err
+	}
+
+	return studentId, universityId, nil
 }
 
 func ChangeStatus(status string) error {
@@ -122,19 +141,25 @@ func ChangeStatus(status string) error {
 }
 
 func GetStatus() (bool, error) {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
 
-	queryStatus, err := conn.Query(context.Background(), "SELECT status FROM records_status;")
-	queryStatus.Next()
-	if err != nil {
+	var result bool
+
+	if err := db.DB.Model(&models.Records_status{}).Select("status").Find(&result).Error; err != nil {
 		return false, err
 	}
-	var stringStatus string
-	queryStatus.Scan(stringStatus)
-	status, _ := strconv.ParseBool(stringStatus)
-	defer queryStatus.Close()
-	return status, nil
+	// conn := ConnectDB()
+	// defer conn.Close(context.Background())
+
+	// queryStatus, err := conn.Query(context.Background(), "SELECT status FROM records_status;")
+	// queryStatus.Next()
+	// if err != nil {
+	// 	return false, err
+	// }
+	// var stringStatus string
+	// queryStatus.Scan(stringStatus)
+	// status, _ := strconv.ParseBool(stringStatus)
+	// defer queryStatus.Close()
+	return result, nil
 
 }
 

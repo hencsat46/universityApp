@@ -63,6 +63,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 			}
 
 			if token.Valid {
+				log.Println("token valid")
 				innerFunc(c)
 				return nil
 			}
