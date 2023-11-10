@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	db "universityServer/internal/migrations"
 	"universityServer/internal/models"
@@ -88,12 +89,14 @@ func GetRecords() ([][]string, error) {
 }
 
 func AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
-	log.Println("I'm in addstudentrecord")
-	a, b, err := addRecord(db.DB, studentName, studentUniversity)
+	pointsInt, err := strconv.Atoi(studentPoints)
 	if err != nil {
-		log.Println(err)
+		return errors.New("cannot convert points")
 	}
-	log.Println(a, b)
+
+	if err = addRecord(db.DB, studentName, studentUniversity, pointsInt); err != nil {
+		return err
+	}
 
 	// result, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM add_record('%s', '%s', %s);", studentName, studentUniversity, studentPoints))
 	// if err != nil {
@@ -108,23 +111,36 @@ func AddStudentRecord(studentName string, studentUniversity string, studentPoint
 	// if status == "0" {
 	// 	return nil
 	// }
-	return errors.New("student or university doesn't exists")
+	return nil
 }
 
-func addRecord(database *gorm.DB, username string, universityName string) (int, int, error) {
+func addRecord(database *gorm.DB, username string, universityName string, points int) error {
 	var studentId, universityId int
+	var hasStudent int64
 
 	log.Println("I'm in addRecord")
 
 	if err := database.Model(&models.Users{Username: username}).Find(&studentId).Error; err != nil {
-		return -1, -1, err
+		return err
 	}
 
 	if err := database.Model(&models.Universities{Uni_name: universityName}).Find(&universityId).Error; err != nil {
-		return -1, -1, err
+		return err
 	}
 
-	return studentId, universityId, nil
+	if err := database.Model(&models.Students_records{Student_id: studentId, Student_university: universityId}).Count(&hasStudent).Error; err != nil {
+		return err
+	}
+
+	if hasStudent == 0 { // student exist
+		if err := 
+	}
+
+	if err := database.Create(&models.Students_records{Student_id: studentId, Student_university: universityId, Student_points: points}).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func ChangeStatus(status string) error {

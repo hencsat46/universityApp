@@ -79,22 +79,20 @@ func SignIn(username string, password string, expTime int) (string, error) {
 
 func ParseStudentRequest(username, studentUniversity, points string) error {
 	log.Println("in parsestudentrequest")
-	if status, err := database.GetStatus(); err != nil {
+	status, err := database.GetStatus()
+	if err != nil {
 		log.Println(err)
 		return err
-	} else {
-		if !status {
-			if err = database.AddStudentRecord(username, studentUniversity, points); err != nil {
-				log.Println(err)
-				return err
-			} else {
-				log.Println("hi")
-				return nil
-			}
+	}
+	if !status {
+		if err = database.AddStudentRecord(username, studentUniversity, points); err != nil {
+			return err
 		} else {
-			log.Println(status)
 			return nil
 		}
+	} else {
+		log.Println(status)
+		return nil
 	}
 
 }
