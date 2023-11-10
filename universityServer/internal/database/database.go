@@ -10,6 +10,7 @@ import (
 
 	db "universityServer/internal/migrations"
 	"universityServer/internal/models"
+	dbhelp "universityServer/internal/pkg/dbHelp"
 
 	pgx "github.com/jackc/pgx/v5"
 	"gorm.io/gorm"
@@ -94,7 +95,7 @@ func AddStudentRecord(studentName string, studentUniversity string, studentPoint
 		return errors.New("cannot convert points")
 	}
 
-	if err = addRecord(db.DB, studentName, studentUniversity, pointsInt); err != nil {
+	if err = addRecord(studentName, studentUniversity, pointsInt); err != nil {
 		return err
 	}
 
@@ -114,29 +115,43 @@ func AddStudentRecord(studentName string, studentUniversity string, studentPoint
 	return nil
 }
 
-func addRecord(database *gorm.DB, username string, universityName string, points int) error {
-	var studentId, universityId int
+func addRecord(username string, universityName string, points int) error {
+	database := db.DB
+	student := models.Users{}
+	university := models.Universities{}
 	var hasStudent int64
+	var recordId int
 
-	log.Println("I'm in addRecord")
-
-	if err := database.Model(&models.Users{Username: username}).Find(&studentId).Error; err != nil {
+	recordName, err := dbhelp.GetRecordId()
+	if err != nil {
 		return err
 	}
 
-	if err := database.Model(&models.Universities{Uni_name: universityName}).Find(&universityId).Error; err != nil {
+	if err := database.Model(&models.Users{}).Where(&models.Users{Username: username}).Find(&student).Error; err != nil {
 		return err
 	}
 
-	if err := database.Model(&models.Students_records{Student_id: studentId, Student_university: universityId}).Count(&hasStudent).Error; err != nil {
+	if err := database.Where(&models.Universities{Uni_name: universityName}).Find(&university).Error; err != nil {
 		return err
 	}
 
-	if hasStudent == 0 { // student exist
-		if err := 
+	if err := database.Model(&models.Students_records{Student_id: int(student.User_id), Student_university: int(university.Uni_id)}).Count(&hasStudent).Error; err != nil {
+		return err
 	}
 
-	if err := database.Create(&models.Students_records{Student_id: studentId, Student_university: universityId, Student_points: points}).Error; err != nil {
+	if hasStudent > 0 { // student exist
+
+		if err := database.Model(&models.Students_records{}).Where(&models.Students_records{Student_id: int(student.User_id), Student_university: int(university.Uni_id)}).Select(recordName).Find(&recordId).Error; err != nil {
+			return err
+		}
+
+		if err := database.Save(&models.Students_records{Record_id: uint(recordId), Student_id: int(student.User_id), Student_university: int(university.Uni_id), Student_points: points}).Error; err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := database.Create(&models.Students_records{Student_id: int(student.User_id), Student_university: int(university.Uni_id), Student_points: points}).Error; err != nil {
 		return err
 	}
 

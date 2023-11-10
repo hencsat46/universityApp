@@ -78,7 +78,6 @@ func SignIn(username string, password string, expTime int) (string, error) {
 }
 
 func ParseStudentRequest(username, studentUniversity, points string) error {
-	log.Println("in parsestudentrequest")
 	status, err := database.GetStatus()
 	if err != nil {
 		log.Println(err)

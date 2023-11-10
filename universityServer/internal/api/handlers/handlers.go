@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -128,7 +127,6 @@ func GetUniversity(ctx echo.Context) error {
 func AddStudent(ctx echo.Context) error {
 
 	username, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
-	log.Println("hi")
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -139,7 +137,6 @@ func AddStudent(ctx echo.Context) error {
 	if err := ctx.Bind(&requestBody); err != nil || requestBody.University == "" || requestBody.Points == "" {
 		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
-	log.Println("after bind")
 	usecase.ParseStudentRequest(username, requestBody.University, requestBody.Points)
 	return nil
 }
