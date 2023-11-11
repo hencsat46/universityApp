@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -132,13 +131,21 @@ func AddStudent(ctx echo.Context) error {
 		return err
 	}
 
-	requestBody := UniversityStudent{"", ""}
+	requestBody := UniversityStudentDTO{"", ""}
 
 	if err := ctx.Bind(&requestBody); err != nil || requestBody.University == "" || requestBody.Points == "" {
 		return ctx.JSON(http.StatusBadRequest, models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
-	usecase.ParseStudentRequest(username, requestBody.University, requestBody.Points)
-	return nil
+	if err = usecase.ParseStudentRequest(username, requestBody.University, requestBody.Points); err != nil {
+
+		if err.Error() == "submission of documents ended" {
+			return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: err.Error()})
+		}
+
+		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
+	}
+
+	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Student added or updated"})
 }
 
 func TokenOk(ctx echo.Context) error {
@@ -147,23 +154,18 @@ func TokenOk(ctx echo.Context) error {
 }
 
 func EditSend(ctx echo.Context) error {
-	requestMap := make(map[string]string)
 
-	err := json.NewDecoder(ctx.Request().Body).Decode(&requestMap)
+	request := EditSendDTO{""}
 
-	if err != nil {
-		fmt.Println(err)
-		return err
+	if err := ctx.Bind(&request); err != nil {
+		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "Json error"})
 	}
 
-	err = usecase.EditSend(requestMap)
-
-	if err != nil {
-		fmt.Println(err)
-		return err
+	if err := usecase.EditSend(request.Status); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: err.Error()})
 	}
 
-	return nil
+	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Success"})
 
 }
 

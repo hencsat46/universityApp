@@ -158,19 +158,6 @@ func addRecord(username string, universityName string, points int) error {
 	return nil
 }
 
-func ChangeStatus(status string) error {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
-
-	_, err := conn.Query(context.Background(), fmt.Sprintf("UPDATE records_status SET status = '%s';", status))
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func GetStatus() (bool, error) {
 
 	var result bool

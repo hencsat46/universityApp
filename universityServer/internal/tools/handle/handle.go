@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	database "universityServer/internal/database"
 	"universityServer/internal/models"
@@ -78,12 +79,12 @@ func SignIn(username string, password string, expTime int) (string, error) {
 }
 
 func ParseStudentRequest(username, studentUniversity, points string) error {
-	status, err := database.GetStatus()
+	status, err := strconv.ParseBool(os.Getenv("DOC_STATUS"))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	if !status {
+	if status {
 		if err = database.AddStudentRecord(username, studentUniversity, points); err != nil {
 			return err
 		} else {
@@ -91,7 +92,7 @@ func ParseStudentRequest(username, studentUniversity, points string) error {
 		}
 	} else {
 		log.Println(status)
-		return nil
+		return errors.New("submission of documents ended")
 	}
 
 }
@@ -144,26 +145,23 @@ func ParseRecords() (map[string]string, error) {
 
 }
 
-func EditSend(dataMap map[string]string) error {
-	value, ok := dataMap["Status"]
-	if !ok && value != "Продолжить" && value != "Остановить" {
-		return errors.New("invalid json")
-	}
+func EditSend(data string) error {
+
 	var status bool
-	switch value {
+	switch data {
 	case "Продолжить":
 		status = true
-		break
 	case "Остановить":
 		status = false
-		break
+	default:
+		return errors.New("wrong json format")
 	}
 
-	err := database.ChangeStatus(strconv.FormatBool(status))
-
-	if err != nil {
+	if err := os.Setenv("DOC_STATUS", strconv.FormatBool(status)); err != nil {
+		log.Println(err)
 		return err
 	}
+
 	return nil
 }
 

@@ -16,7 +16,11 @@ type SignInDTO struct {
 	Password string `json:"Password"`
 }
 
-type UniversityStudent struct {
+type UniversityStudentDTO struct {
 	University string `json:"University"`
 	Points     string `json:"Points"`
+}
+
+type EditSendDTO struct {
+	Status string `json:"Status"`
 }
