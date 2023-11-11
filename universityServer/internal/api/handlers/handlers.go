@@ -161,7 +161,16 @@ func EditSend(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "Json error"})
 	}
 
-	if err := usecase.EditSend(request.Status); err != nil {
+	username, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
+
+	if err != nil {
+		return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: err.Error()})
+	}
+
+	if err := usecase.EditSend(request.Status, username); err != nil {
+		if err.Error() == "permission denied" {
+			return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: err.Error()})
+		}
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: err.Error()})
 	}
 

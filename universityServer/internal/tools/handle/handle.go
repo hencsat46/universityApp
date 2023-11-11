@@ -145,8 +145,10 @@ func ParseRecords() (map[string]string, error) {
 
 }
 
-func EditSend(data string) error {
-
+func EditSend(data, user string) error {
+	if user != "admin" {
+		return errors.New("permission denied")
+	}
 	var status bool
 	switch data {
 	case "Продолжить":
