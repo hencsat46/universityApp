@@ -313,23 +313,28 @@ func SignIn(username, password string) error {
 
 }
 
-func GetInfoDb(username string) ([]string, error) {
+func GetInfoDb(username string) (models.StudentInfo, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
+	var studentData models.StudentInfo
 
-	studentResponse, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM get_user_data('%s')", username))
-
-	if err != nil {
-		fmt.Println(err)
-		return make([]string, 0), err
+	if err := db.DB.Model(&models.Users{Username: username}).Select([]string{"users.username", "users.student_name", "users.student_surname", "universities.uni_name"}).Joins("LEFT JOIN students_records ON students_records.student_id = users.user_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&studentData).Error; err != nil {
+		return models.StudentInfo{}, nil
 	}
 
-	studentData := make([]string, 4)
+	// studentResponse, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM get_user_data('%s')", username))
 
-	studentResponse.Next()
-	studentResponse.Scan(&studentData[0], &studentData[1], &studentData[2], &studentData[3])
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return make([]string, 0), err
+	// }
 
-	fmt.Println(studentData)
+	// studentData := make([]string, 4)
+
+	// studentResponse.Next()
+	// studentResponse.Scan(&studentData[0], &studentData[1], &studentData[2], &studentData[3])
+
+	// fmt.Println(studentData)
 
 	return studentData, nil
 

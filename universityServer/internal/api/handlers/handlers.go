@@ -159,41 +159,18 @@ func GetRecords(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: arr})
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
 
-	// jsonData, err := jsonResponse.Response(records, "studentRecords")
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
 }
 
 func UserProfile(ctx echo.Context) error {
-	token, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
+
+	response, err := usecase.GetStudentInfo(ctx.Request().Header["Token"][0])
 
 	if err != nil {
-		fmt.Println(err)
-		return err
+		return ctx.JSON(http.StatusInternalServerError, models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
 	}
 
-	responseMap, err := usecase.GetStudentInfo(token)
-
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-	jsonData, err := jsonResponse.Response(responseMap, "profile")
-
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	return ctx.JSON(200, jsonData)
+	return ctx.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: response})
 }
 
 func AutoLogin(ctx echo.Context) error {

@@ -169,19 +169,19 @@ func EditSend(data, user string) error {
 	return nil
 }
 
-func GetStudentInfo(username string) (map[string]string, error) {
+func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
+	username, err := jwtToken.GetUsernameFromToken(tokenHeader)
+
+	if err != nil {
+		log.Println(err)
+		return models.StudentInfo{}, err
+	}
 	studentData, err := database.GetInfoDb(username)
 
 	if err != nil {
-		fmt.Println(err)
-		return make(map[string]string), err
+		log.Println(err)
+		return models.StudentInfo{}, err
 	}
 
-	studentMap := make(map[string]string)
-	studentMap["Username"] = studentData[0]
-	studentMap["Name"] = studentData[1]
-	studentMap["Surname"] = studentData[2]
-	studentMap["University"] = studentData[3]
-
-	return studentMap, nil
+	return studentData, nil
 }
