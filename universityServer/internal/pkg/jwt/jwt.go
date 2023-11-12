@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
+	"universityServer/internal/models"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -58,19 +60,18 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 			})
 
 			if err != nil {
-				log.Println(err, "хуйня")
-				return err
+				log.Println(err)
+				return c.JSON(http.StatusUnauthorized, models.Response{Status: http.StatusUnauthorized, Payload: "Authentification error"})
 			}
 
 			if token.Valid {
-				log.Println("token valid")
+				log.Println("Token valid")
 				innerFunc(c)
-				return nil
+				return c.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: "Sign in ok"})
 			}
 			return nil
 		} else {
-			log.Println("no tokens")
-			return nil
+			return c.JSON(http.StatusUnauthorized, models.Response{Status: http.StatusUnauthorized, Payload: "Authentification error"})
 		}
 	})
 }

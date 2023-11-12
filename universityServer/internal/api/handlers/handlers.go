@@ -8,7 +8,6 @@ import (
 	database "universityServer/internal/database"
 	"universityServer/internal/models"
 	jwtActions "universityServer/internal/pkg/jwt"
-	jsonResponse "universityServer/internal/pkg/responseJson"
 	usecase "universityServer/internal/tools/handle"
 
 	"github.com/labstack/echo/v4"
@@ -121,11 +120,6 @@ func AddStudent(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Student added or updated"})
 }
 
-func TokenOk(ctx echo.Context) error {
-	fmt.Println("Token Ok")
-	return nil
-}
-
 func EditSend(ctx echo.Context) error {
 
 	request := EditSendDTO{""}
@@ -175,11 +169,5 @@ func UserProfile(ctx echo.Context) error {
 
 func AutoLogin(ctx echo.Context) error {
 
-	jsonData, err := jsonResponse.Response(make(map[string]string), "autoLogin")
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	return ctx.JSON(200, jsonData)
+	return ctx.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: "Sign in ok"})
 }
