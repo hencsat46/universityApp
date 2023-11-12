@@ -71,6 +71,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 			}
 			return nil
 		} else {
+			log.Println("no token in header")
 			return c.JSON(http.StatusUnauthorized, models.Response{Status: http.StatusUnauthorized, Payload: "Authentification error"})
 		}
 	})

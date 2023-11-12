@@ -153,7 +153,7 @@ func addRecord(username string, universityName string, points int) error {
 
 	if hasStudent > 0 { // student exist
 
-		if err := database.Model(&models.Students_records{}).Where(&models.Students_records{Student_id: int(student.User_id), Student_university: int(university.Uni_id)}).Select(recordName).Find(&recordId).Error; err != nil {
+		if err := database.Model(&models.Students_records{}).Where(&models.Students_records{Student_id: int(student.User_id)}).Select(recordName).Find(&recordId).Error; err != nil {
 			return err
 		}
 

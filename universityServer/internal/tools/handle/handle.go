@@ -34,13 +34,8 @@ func checkEmpty(username string, password string) bool {
 }
 
 func Ping() (bool, error) {
-	if status, err := database.GetStatus(); err != nil {
-		log.Println(err)
-		return false, err
-	} else {
-		log.Println(status)
-		return status, nil
-	}
+	log.Println(os.Getenv("DOC_STATUS"))
+	return false, nil
 }
 
 func SignIn(username string, password string, expTime int) (string, error) {
@@ -64,10 +59,6 @@ func SignIn(username string, password string, expTime int) (string, error) {
 		return "", err
 	}
 	fmt.Println(username)
-	if username == "admin" {
-		log.Println("Is admin")
-		return "", nil
-	}
 
 	newToken, err := jwtToken.CreateJWT(username, userId, expTime)
 	if err != nil {
@@ -161,12 +152,14 @@ func EditSend(data, user string) error {
 		return errors.New("wrong json format")
 	}
 
-	log.Println(status)
+	log.Println("Before editing status", status)
 
 	if err := os.Setenv("DOC_STATUS", strconv.FormatBool(status)); err != nil {
 		log.Println(err)
 		return err
 	}
+
+	log.Println("New env name", os.Getenv("DOC_STATUS"))
 
 	return nil
 }

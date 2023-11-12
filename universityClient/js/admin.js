@@ -11,7 +11,17 @@ async function signInButton(element) {
         body: JSON.stringify(json)
     })
 
+    
+    
     const response = await (await fetch(request)).json()
+    
+    if (response.Payload.length) {
+        setCookie("")
+        let date = new Date()
+        date.setMinutes(date.getMinutes() + 30)
+        setCookie(response.Payload + "; expires=" + date)
+    }
+
     if (response.Status == 200) {
         document.querySelector(".login-form").style.display = 'none'
         const newDiv = document.createElement("div")
@@ -44,6 +54,12 @@ async function signInButton(element) {
 
 }
 
+function setCookie(stringToken) {
+    console.log(stringToken)
+    document.cookie = `Token=${stringToken}`
+    console.log(document.cookie)
+}
+
 async function changeSubmission(element) {
     console.log(element.innerText)
 
@@ -52,16 +68,38 @@ async function changeSubmission(element) {
     }
 
     console.log(jsonData)
+    const token = getToken()
     const request = new Request("http://localhost:3000/stopSend", {
         method: "POST",
         mode: "cors",
         headers: {
             "Content-Type": "application/json",
+            "Token": token
         },
         body: JSON.stringify(jsonData),
     })
 
-    fetch(request)
+    console.log(request)
+
+    const response = await (await fetch(request)).json()
+
+    console.log(response)
 
 
+}
+
+function getToken() {
+    const cookies = document.cookie
+    let cookieArr = cookies.split(';')
+    const length = cookieArr.length
+    for (let i = 0; i < length; i++) {
+        cookieArr[i] = cookieArr[i].trim()
+    }
+
+    for (let i = 0; i < length; i++) {
+        const tempArr = cookieArr[i].split('=')
+        console.log(tempArr[0])
+        if (tempArr[0] == 'Token') return tempArr[1]
+    }
+    return null
 }
