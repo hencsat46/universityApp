@@ -54,38 +54,48 @@ func GetRemain() (int64, error) {
 
 }
 
-func GetRecords() ([][]string, error) {
+func GetRecords() ([]models.StudentInfo, error) {
 	conn := ConnectDB()
 	defer conn.Close(context.Background())
+	var countQuery int64
 
-	countQuery, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM students_records;")
+	//countQuery, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM students_records;")
 
-	if err != nil {
-		fmt.Println(err)
-		return make([][]string, 0), err
+	if err := db.DB.Model(&models.Students_records{}).Count(&countQuery).Error; err != nil {
+		return nil, err
 	}
 
-	var count int
-	countQuery.Next()
-	countQuery.Scan(&count)
-	countQuery.Close()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return make([][]string, 0), err
+	// }
 
-	recordsArr := make([][]string, 0, count)
+	// var count int
+	// countQuery.Next()
+	// countQuery.Scan(&count)
+	// countQuery.Close()
 
-	recordsQuery, err := conn.Query(context.Background(), "SELECT * FROM get_records();")
+	recordsArr := make([]models.StudentInfo, countQuery)
 
-	if err != nil {
-		fmt.Println(err)
-		return make([][]string, 0), err
-	}
-
-	for recordsQuery.Next() {
-		record := make([]string, 4)
-		recordsQuery.Scan(&record[0], &record[1], &record[2], &record[3])
-		recordsArr = append(recordsArr, record)
+	if err := db.DB.Table("users").Select([]string{"users.student_name", "users.student_surname", "universities.uni_name", "students_records.student_points"}).Joins("RIGHT JOIN students_records ON users.user_id = students_records.student_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&recordsArr).Error; err != nil {
+		return nil, err
 	}
 
 	return recordsArr, nil
+
+	// recordsQuery, err := conn.Query(context.Background(), "SELECT * FROM get_records();")
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return make([][]string, 0), err
+	// }
+
+	// for recordsQuery.Next() {
+	// 	record := make([]string, 4)
+	// 	recordsQuery.Scan(&record[0], &record[1], &record[2], &record[3])
+	// 	recordsArr = append(recordsArr, record)
+	// }
+	// return recordsArr, nil
 
 }
 

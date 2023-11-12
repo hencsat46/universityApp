@@ -115,33 +115,35 @@ func SignUp(studentName, studentSurname, username, password string) error {
 
 }
 
-func ParseRecords() (map[string]string, error) {
+func ParseRecords() ([]models.StudentInfo, error) {
 
-	records, err := database.GetRecords()
+	arr, err := database.GetRecords()
 
 	if err != nil {
-		fmt.Println(err)
-		return make(map[string]string), err
+		log.Println(err)
+		return nil, err
 	}
 
-	length := len(records)
+	return arr, nil
 
-	recordsMap := make(map[string]string)
+	// length := len(records)
 
-	var finalString string
+	// recordsMap := make(map[string]string)
 
-	for i := 0; i < length; i++ {
-		tempString := fmt.Sprintf("%s|%s|%s|%s", records[i][0], records[i][1], records[i][2], records[i][3])
-		finalString += tempString
-		if length-1 != i {
-			finalString += ";"
-		}
+	// var finalString string
 
-	}
+	// for i := 0; i < length; i++ {
+	// 	tempString := fmt.Sprintf("%s|%s|%s|%s", records[i][0], records[i][1], records[i][2], records[i][3])
+	// 	finalString += tempString
+	// 	if length-1 != i {
+	// 		finalString += ";"
+	// 	}
 
-	recordsMap["records"] = finalString
+	// }
 
-	return recordsMap, nil
+	// recordsMap["records"] = finalString
+
+	// return recordsMap, nil
 
 }
 

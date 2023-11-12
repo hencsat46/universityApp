@@ -64,33 +64,6 @@ func SignIn(ctx echo.Context) error {
 
 	//test on front
 
-	// dataMap := make(map[string]string)
-
-	// err := json.NewDecoder(ctx.Request().Body).Decode(&dataMap)
-	// fmt.Println(dataMap)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// expTime := 30
-
-	// token, err := usecase.SignIn(dataMap, expTime)
-
-	// if err != nil {
-	// 	return err
-	// }
-
-	// responseMap := make(map[string]string)
-	// responseMap["Token"] = token
-	// fmt.Println(responseMap)
-	// jsonStruct, err := jsonResponse.Response(responseMap, "sign in")
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
-
-	// return ctx.JSON(http.StatusOK, jsonStruct)
 }
 
 func GetRemain(ctx echo.Context) error {
@@ -179,21 +152,24 @@ func EditSend(ctx echo.Context) error {
 }
 
 func GetRecords(ctx echo.Context) error {
-	records, err := usecase.ParseRecords()
+	arr, err := usecase.ParseRecords()
 
 	if err != nil {
-		fmt.Println(err)
-		return err
+		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
 	}
 
-	jsonData, err := jsonResponse.Response(records, "studentRecords")
+	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: arr})
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
 
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+	// jsonData, err := jsonResponse.Response(records, "studentRecords")
 
-	return ctx.JSON(200, jsonData)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
 }
 
 func UserProfile(ctx echo.Context) error {

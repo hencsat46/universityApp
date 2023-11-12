@@ -32,3 +32,10 @@ type Response struct {
 	Status  int
 	Payload interface{}
 }
+
+type StudentInfo struct {
+	Student_name    string
+	Student_surname string
+	Uni_name        string
+	Student_points  int
+}
