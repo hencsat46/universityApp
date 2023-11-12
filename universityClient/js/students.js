@@ -9,7 +9,7 @@ async function getRecords() {
 
     const response = await (await fetch(request)).json()
 
-    const recordsArray = (await response).Payload.Message
+    const recordsArray = response.Payload
 
     console.log(recordsArray)
 
@@ -18,10 +18,10 @@ async function getRecords() {
     for (let i = 0; i < len; i++) {
         const newHtml = `
             
-            <td>${recordsArray[i][0]}</td>
-            <td>${recordsArray[i][1]}</td>
-            <td>${recordsArray[i][2]}</td>
-            <td>${recordsArray[i][3]}</td>
+            <td>${recordsArray[i].Student_name}</td>
+            <td>${recordsArray[i].Student_surname}</td>
+            <td>${recordsArray[i].Uni_name}</td>
+            <td>${recordsArray[i].Student_points}</td>
             
         `
         const newTr = document.createElement("tr")

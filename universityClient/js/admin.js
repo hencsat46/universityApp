@@ -12,7 +12,7 @@ async function signInButton(element) {
     })
 
     const response = await (await fetch(request)).json()
-    if (response.Status == "Ok") {
+    if (response.Status == 200) {
         document.querySelector(".login-form").style.display = 'none'
         const newDiv = document.createElement("div")
         newDiv.classList.add("action-wrapper")

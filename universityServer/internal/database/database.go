@@ -81,6 +81,8 @@ func GetRecords() ([]models.StudentInfo, error) {
 		return nil, err
 	}
 
+	log.Println(recordsArr)
+
 	return recordsArr, nil
 
 	// recordsQuery, err := conn.Query(context.Background(), "SELECT * FROM get_records();")

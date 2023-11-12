@@ -14,7 +14,7 @@ import (
 func ParseUniversityJson(number int) []models.Universities {
 	result := database.ReadUniversity(number)
 
-	log.Println(result)
+	//log.Println(result)
 	return result
 
 }
@@ -160,6 +160,8 @@ func EditSend(data, user string) error {
 	default:
 		return errors.New("wrong json format")
 	}
+
+	log.Println(status)
 
 	if err := os.Setenv("DOC_STATUS", strconv.FormatBool(status)); err != nil {
 		log.Println(err)

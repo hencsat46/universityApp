@@ -9,6 +9,8 @@ async function getProfile() {
 
     const response = await (await fetch(request)).json()
 
+    console.log(response)
+
     const newHtml = `
 
         <div class="user-bio">
@@ -16,10 +18,10 @@ async function getProfile() {
                 <img src="../img/usernameIcon.jpg" alt="x">
             </div>
             <div class="user-data">
-                <div class="user-name">${response.Payload.Name}</div>
-                <div class="user-surname">${response.Payload.Surname}</div>
+                <div class="user-name">${response.Payload.Student_name}</div>
+                <div class="user-surname">${response.Payload.Student_surname}</div>
                 <div class="user-university">
-                    ${response.Payload.University}
+                    ${response.Payload.Uni_name}
                 </div>
                 <button onclick="quit()">Выйти</button>
             </div>

@@ -67,7 +67,7 @@ func ValidationJWT(innerFunc func(ctx echo.Context) error) echo.HandlerFunc {
 			if token.Valid {
 				log.Println("Token valid")
 				innerFunc(c)
-				return c.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: "Sign in ok"})
+				// return c.JSON(http.StatusOK, models.Response{Status: http.StatusOK, Payload: "Sign in ok"})
 			}
 			return nil
 		} else {

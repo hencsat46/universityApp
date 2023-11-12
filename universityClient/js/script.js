@@ -66,11 +66,11 @@ async function signInButton(element) {
     
     const response = await (await fetch(request)).json()
     
-    if ('Token' in response.Payload) {
+    if (response.Payload.length) {
         setCookie("")
         let date = new Date()
-        date.setMinutes(date.getMinutes() + 5)
-        setCookie(response.Payload.Token + "; expires=" + date)
+        date.setMinutes(date.getMinutes() + 30)
+        setCookie(response.Payload + "; expires=" + date)
         document.querySelector(".sign-btns").style.display = "none"
         document.querySelector(".username-icon").style.display = "flex"
     }
@@ -110,6 +110,7 @@ function getToken() {
 
     for (let i = 0; i < length; i++) {
         const tempArr = cookieArr[i].split('=')
+        console.log(tempArr[0])
         if (tempArr[0] == 'Token') return tempArr[1]
     }
     return null
@@ -157,18 +158,23 @@ function setUniversity(element) {
 
 async function autoLogin() {
     const token = getToken()
+    console.log(token)
     if (token == null) return
-    const request = new Request("http://localhost:3000", {
+    const request = new Request("http://localhost:3000/", {
         method: "GET",
         mode: "cors",
         headers : {
             "Token": token,
         }
     })
-
+    console.log("aaaaaaaaaaaaa")
+    console.log(request)
+    console.log("hello")
     const response = await (await fetch(request)).json()
 
-    if (response.Status = "Ok" && response.Payload.Message == "Login done") {
+    console.log(response)
+
+    if (response.Status == 200 && response.Payload == "Sign in ok") {
         document.querySelector(".sign-btns").style.display = "none"
         document.querySelector(".username-icon").style.display = "flex"
     }
