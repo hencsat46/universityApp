@@ -38,6 +38,14 @@ header {
     font-size: 19px;
 }
 
+.results-choice {
+    font-size: 19px;
+}
+
+.results-choice:hover {
+    text-decoration: underline;
+}
+
 .profile {
     color: white;
 }

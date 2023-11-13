@@ -181,8 +181,24 @@ func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 	return studentData, nil
 }
 
-func GetResult() {
+func GetResult() ([]models.ResultRecord, error) {
 
-	database.GetResult()
+	result, emptyCount, err := database.GetResult()
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	finalResult := make([]models.ResultRecord, 0, len(result)-emptyCount)
+
+	for _, value := range result {
+		if len(value.Student_information.([]models.ResultStudent)) != 0 {
+			//log.Println("Empty information")
+			finalResult = append(finalResult, value)
+		}
+	}
+
+	return finalResult, nil
 
 }

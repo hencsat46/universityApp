@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -32,7 +31,6 @@ func ConnectDB() *pgx.Conn {
 func ReadUniversity(border int) []models.Universities {
 	uni := make([]models.Universities, 2)
 
-	log.Println(db.DB)
 	if err := db.DB.Offset(border).Limit(2).Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
 		log.Println(err)
 	}
@@ -55,8 +53,7 @@ func GetRemain() (int64, error) {
 }
 
 func GetRecords() ([]models.StudentInfo, error) {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
+
 	var countQuery int64
 
 	//countQuery, err := conn.Query(context.Background(), "SELECT COUNT(*) FROM students_records;")
@@ -81,7 +78,7 @@ func GetRecords() ([]models.StudentInfo, error) {
 		return nil, err
 	}
 
-	log.Println(recordsArr)
+	//log.Println(recordsArr)
 
 	return recordsArr, nil
 
@@ -276,31 +273,6 @@ func checkUser(database *gorm.DB, model *models.Users) (int64, error) {
 
 }
 
-func Authorization(username string, password string) error {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
-
-	response, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM login('%s', '%s');", username, password))
-
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	response.Next()
-	var status string
-
-	response.Scan(&status)
-	fmt.Println(status)
-
-	if status == "0" {
-		return nil
-	}
-
-	return errors.New("wrong login or password")
-
-}
-
 func SignIn(username, password string) error {
 	var result int64
 
@@ -316,64 +288,59 @@ func SignIn(username, password string) error {
 }
 
 func GetInfoDb(username string) (models.StudentInfo, error) {
-	conn := ConnectDB()
-	defer conn.Close(context.Background())
+
 	var studentData models.StudentInfo
 
 	if err := db.DB.Model(&models.Users{Username: username}).Select([]string{"users.username", "users.student_name", "users.student_surname", "universities.uni_name"}).Joins("LEFT JOIN students_records ON students_records.student_id = users.user_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&studentData).Error; err != nil {
 		return models.StudentInfo{}, nil
 	}
 
-	// studentResponse, err := conn.Query(context.Background(), fmt.Sprintf("SELECT * FROM get_user_data('%s')", username))
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return make([]string, 0), err
-	// }
-
-	// studentData := make([]string, 4)
-
-	// studentResponse.Next()
-	// studentResponse.Scan(&studentData[0], &studentData[1], &studentData[2], &studentData[3])
-
-	// fmt.Println(studentData)
-
 	return studentData, nil
 
 }
 
-func GetResult() error {
+func GetResult() ([]models.ResultRecord, int, error) {
 	var uniCount int64
 	var universityName []string
 	var universityId []uint
 
 	if err := db.DB.Model(&models.Universities{}).Count(&uniCount).Error; err != nil {
-		return err
+		return nil, 0, err
 	}
 
 	result := make([]models.ResultRecord, uniCount)
 
 	if err := db.DB.Model(&models.Universities{}).Select("uni_name").Find(&universityName).Error; err != nil {
-		return err
+		return nil, 0, err
 	}
 
 	if err := db.DB.Model(&models.Universities{}).Select("uni_id").Find(&universityId).Error; err != nil {
-		return err
+		return nil, 0, err
 	}
+
+	var emptyCount int
 
 	for i := 0; i < int(uniCount); i++ {
 		var studentCount int64
+		var seatsCount int
+
+		if err := db.DB.Model(models.Universities{}).Select("seats_count").Where("uni_id = ?", universityId[i]).Find(&seatsCount).Error; err != nil {
+			return nil, 0, err
+		}
 
 		if err := db.DB.Model(models.Students_records{}).Where("student_university = ?", universityId[i]).Count(&studentCount).Error; err != nil {
-			return err
+			return nil, 0, err
 		}
 
 		students := make([]models.ResultStudent, studentCount)
 
-		if err := db.DB.Table("users").Where("student_university = ?", universityId[i]).Joins("LEFT JOIN students_records ON users.user_id = students_records.student_id").Select([]string{"users.student_name", "users.student_surname", "students_records.student_points"}).Order("students_records.student_points DESC").Find(&students).Error; err != nil {
-			return err
+		if err := db.DB.Table("users").Limit(seatsCount).Where("student_university = ?", universityId[i]).Joins("LEFT JOIN students_records ON users.user_id = students_records.student_id").Select([]string{"users.student_name", "users.student_surname", "students_records.student_points"}).Order("students_records.student_points DESC").Find(&students).Error; err != nil {
+			return nil, 0, err
 		}
 
+		if len(students) == 0 {
+			emptyCount++
+		}
 		//log.Println(students)
 
 		result[i].Student_university = universityName[i]
@@ -382,10 +349,10 @@ func GetResult() error {
 
 	}
 
-	log.Println(result)
+	//log.Println(result)
 
 	// for i := 0; i < 4; i++ {
 	// 	log.Println(universityName[i])
 	// }
-	return nil
+	return result, emptyCount, nil
 }

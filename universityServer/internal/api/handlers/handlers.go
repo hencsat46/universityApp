@@ -172,6 +172,11 @@ func AutoLogin(ctx echo.Context) error {
 }
 
 func GetResult(ctx echo.Context) error {
-	usecase.GetResult()
-	return nil
+	result, err := usecase.GetResult()
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusUnauthorized, Payload: "Internal Server Error"})
+	}
+
+	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: result})
 }
