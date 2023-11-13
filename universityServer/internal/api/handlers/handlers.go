@@ -170,3 +170,8 @@ func UserProfile(ctx echo.Context) error {
 func AutoLogin(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Sign in ok"})
 }
+
+func GetResult(ctx echo.Context) error {
+	usecase.GetResult()
+	return nil
+}

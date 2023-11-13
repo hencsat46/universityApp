@@ -39,3 +39,14 @@ type StudentInfo struct {
 	Uni_name        string
 	Student_points  int
 }
+
+type ResultStudent struct {
+	Student_name    string
+	Student_surname string
+	Student_points  int
+}
+
+type ResultRecord struct {
+	Student_university  string
+	Student_information interface{}
+}

@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+}
+
+body {
+    background: #5b5959;
+    color: black;
+    animation: 2s infinite alternate slidein;
+    min-height: 100%;
+}
+
+.wrapper {
+    background: #5b5959;
+}
+
+.sign-btns {
+    display: flex;
+}
+
+.links a {
+    padding: 0 10px;
+    text-decoration: none;
+    color: white;
+    font-size: 19px;
+}
+
+header {
+    position: relative;
+    width: 100%;
+    padding: 20px 100px;
+    background: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    filter: blur(0px);
+    height: 90px;
+    margin-bottom: 30px;
+}

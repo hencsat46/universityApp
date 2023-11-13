@@ -180,3 +180,9 @@ func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 
 	return studentData, nil
 }
+
+func GetResult() {
+
+	database.GetResult()
+
+}

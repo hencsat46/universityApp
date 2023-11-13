@@ -341,3 +341,51 @@ func GetInfoDb(username string) (models.StudentInfo, error) {
 	return studentData, nil
 
 }
+
+func GetResult() error {
+	var uniCount int64
+	var universityName []string
+	var universityId []uint
+
+	if err := db.DB.Model(&models.Universities{}).Count(&uniCount).Error; err != nil {
+		return err
+	}
+
+	result := make([]models.ResultRecord, uniCount)
+
+	if err := db.DB.Model(&models.Universities{}).Select("uni_name").Find(&universityName).Error; err != nil {
+		return err
+	}
+
+	if err := db.DB.Model(&models.Universities{}).Select("uni_id").Find(&universityId).Error; err != nil {
+		return err
+	}
+
+	for i := 0; i < int(uniCount); i++ {
+		var studentCount int64
+
+		if err := db.DB.Model(models.Students_records{}).Where("student_university = ?", universityId[i]).Count(&studentCount).Error; err != nil {
+			return err
+		}
+
+		students := make([]models.ResultStudent, studentCount)
+
+		if err := db.DB.Table("users").Where("student_university = ?", universityId[i]).Joins("LEFT JOIN students_records ON users.user_id = students_records.student_id").Select([]string{"users.student_name", "users.student_surname", "students_records.student_points"}).Order("students_records.student_points DESC").Find(&students).Error; err != nil {
+			return err
+		}
+
+		//log.Println(students)
+
+		result[i].Student_university = universityName[i]
+		result[i].Student_information = students
+		//result[i] = models.ResultRecord{Student_university: universityName[i], }
+
+	}
+
+	log.Println(result)
+
+	// for i := 0; i < 4; i++ {
+	// 	log.Println(universityName[i])
+	// }
+	return nil
+}

@@ -19,5 +19,6 @@ func Routes(e *echo.Echo) {
 	e.GET("/profile", jwt.ValidationJWT(handlers.UserProfile))
 	e.GET("/", jwt.ValidationJWT(handlers.AutoLogin))
 	e.GET("/ping", handlers.Ping)
+	e.GET("/getresult", handlers.GetResult)
 
 }
