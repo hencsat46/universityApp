@@ -11,6 +11,10 @@ import (
 	jwtToken "universityServer/internal/pkg/jwt"
 )
 
+func init() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+}
+
 func ParseUniversityJson(number int) []models.Universities {
 	result := database.ReadUniversity(number)
 
@@ -167,6 +171,8 @@ func EditSend(data, user string) error {
 func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 	username, err := jwtToken.GetUsernameFromToken(tokenHeader)
 
+	log.Println("Username of profile requester", username)
+
 	if err != nil {
 		log.Println(err)
 		return models.StudentInfo{}, err
@@ -182,6 +188,16 @@ func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 }
 
 func GetResult() ([]models.ResultRecord, error) {
+
+	status, err := strconv.ParseBool(os.Getenv("DOC_STATUS"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	if status {
+		return nil, nil
+	}
 
 	result, emptyCount, err := database.GetResult()
 

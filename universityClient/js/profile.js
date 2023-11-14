@@ -33,7 +33,8 @@ async function getProfile() {
 }
 
 function quit() {
-    document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    window.location.href = "/";
 }
 
 getProfile()

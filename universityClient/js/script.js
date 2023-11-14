@@ -42,9 +42,11 @@ function sendData(elem) {
     switch (elem.className) {
         case "sign-up":
             signUpButton(elem)
+            closeForm(elem.parentNode)
             break
         case "sign-in":
             signInButton(elem)
+            closeForm(elem.parentNode)
             break
     }
     
@@ -66,7 +68,7 @@ async function signInButton(element) {
     
     const response = await (await fetch(request)).json()
     
-    if (response.Payload.length) {
+    if (response.Status != 401) {
         setCookie("")
         let date = new Date()
         date.setMinutes(date.getMinutes() + 30)

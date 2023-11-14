@@ -4,23 +4,26 @@ function createTable(response) {
 
     if (response.Status == 200) {
 
-        for (let i = 0; i < response.Payload.length; ++i) {
-            console.log(response.Payload[i].Student_university)
-            const header = `<h3 class="table-header">${response.Payload[i].Student_university}</h3>`
-            let table = "<table>"
-            for (let j = 0; j < response.Payload[i].Student_information.length; ++j) {
+        if (response.Payload[0].Student_university == "No records or document submission is not ended") html = "Подача документов не закончена или отсутствуют документы"
+        else {
+            //console.log(response.Payload[i].Student_university)
+            for (let i = 0; i < response.Payload.length; ++i) {
+                const header = `<h3 class="table-header">${response.Payload[i].Student_university}</h3>`
+                let table = "<table>"
+                for (let j = 0; j < response.Payload[i].Student_information.length; ++j) {
+                    
+                    let columns = ""
+                    columns += `<td>${response.Payload[i].Student_information[j].Student_name}</td>`
+                    columns += `<td>${response.Payload[i].Student_information[j].Student_surname}</td>`
+                    columns += `<td>${response.Payload[i].Student_information[j].Student_points}</td>`
+                    console.log(columns)
+                    table += `<tr>${columns}</tr>`
+                    console.log(table)
+                }
+                table += "</table>"
+                html += header + table
                 
-                let columns = ""
-                columns += `<td>${response.Payload[i].Student_information[j].Student_name}</td>`
-                columns += `<td>${response.Payload[i].Student_information[j].Student_surname}</td>`
-                columns += `<td>${response.Payload[i].Student_information[j].Student_points}</td>`
-                console.log(columns)
-                table += `<tr>${columns}</tr>`
-                console.log(table)
             }
-            table += "</table>"
-            html += header + table
-            
         }
     }
     console.log(html)

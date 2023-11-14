@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -56,7 +57,11 @@ func SignIn(ctx echo.Context) error {
 	}
 
 	if token, err := usecase.SignIn(requestBody.Username, requestBody.Password, expTime); err != nil {
+		if err.Error() == "wrong username or password" {
+			return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: "Authentication error"})
+		}
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal server error"})
+
 	} else {
 		return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: token})
 	}
@@ -159,6 +164,7 @@ func GetRecords(ctx echo.Context) error {
 func UserProfile(ctx echo.Context) error {
 
 	response, err := usecase.GetStudentInfo(ctx.Request().Header["Token"][0])
+	log.Println(response)
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
@@ -176,6 +182,12 @@ func GetResult(ctx echo.Context) error {
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusUnauthorized, Payload: "Internal Server Error"})
+	}
+
+	if err == nil && result == nil {
+		log.Println("PENIS")
+		log.Println([]models.ResultRecord{models.ResultRecord{Student_university: "No records or document submission is not ended", Student_information: nil}})
+		return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: []models.ResultRecord{models.ResultRecord{Student_university: "No records or document submission is not ended", Student_information: nil}}})
 	}
 
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: result})
