@@ -6,15 +6,49 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	database "universityServer/internal/database"
 	"universityServer/internal/models"
 	jwtActions "universityServer/internal/pkg/jwt"
-	usecase "universityServer/internal/tools/handle"
 
 	"github.com/labstack/echo/v4"
 )
 
-func SignUp(ctx echo.Context) error {
+type handler struct {
+	usecase UsecaseInterfaces
+}
+
+type UsecaseInterfaces interface {
+	ParseUniversityJson(int) []models.Universities
+	Ping() (bool, error)
+	SignIn(string, string, int) (string, error)
+	ParseStudentRequest(string, string, string) error
+	SignUp(string, string, string, string) error
+	ParseRecords() ([]models.StudentInfo, error)
+	EditSend(string, string) error
+	GetStudentInfo(string) (models.StudentInfo, error)
+	GetResult() ([]models.ResultRecord, error)
+	GetRemain() (int64, error)
+}
+
+func NewHandler(usecase UsecaseInterfaces) *handler {
+	return &handler{usecase: usecase}
+}
+
+func (h *handler) Routes(e *echo.Echo) {
+	e.POST("/getUniversity", h.GetUniversity)
+	e.POST("/signup", h.SignUp)
+	e.POST("/signin", h.SignIn)
+	e.GET("/token", jwtActions.ValidationJWT(func(ctx echo.Context) error { return nil }))
+	e.GET("/getRemain", h.GetRemain)
+	e.POST("/addStudent", jwtActions.ValidationJWT(h.AddStudent))
+	e.GET("/records", h.GetRecords)
+	e.POST("/stopSend", jwtActions.ValidationJWT(h.EditSend))
+	e.GET("/profile", jwtActions.ValidationJWT(h.UserProfile))
+	e.GET("/", jwtActions.ValidationJWT(h.AutoLogin))
+	e.GET("/ping", h.Ping)
+	e.GET("/getresult", h.GetResult)
+}
+
+func (h *handler) SignUp(ctx echo.Context) error {
 
 	var requestBody SignUpDTO = SignUpDTO{"", "", "", ""}
 
@@ -31,7 +65,7 @@ func SignUp(ctx echo.Context) error {
 	// 	return err
 	// }
 
-	err := usecase.SignUp(requestBody.StudentName, requestBody.StudentSurname, requestBody.Username, requestBody.Password)
+	err := h.usecase.SignUp(requestBody.StudentName, requestBody.StudentSurname, requestBody.Username, requestBody.Password)
 	fmt.Println("delivery message")
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "Username in taken"})
@@ -41,7 +75,7 @@ func SignUp(ctx echo.Context) error {
 
 }
 
-func SignIn(ctx echo.Context) error {
+func (h *handler) SignIn(ctx echo.Context) error {
 
 	var requestBody SignInDTO = SignInDTO{"", ""}
 	var expTime int
@@ -56,7 +90,7 @@ func SignIn(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "Wrong data"})
 	}
 
-	if token, err := usecase.SignIn(requestBody.Username, requestBody.Password, expTime); err != nil {
+	if token, err := h.usecase.SignIn(requestBody.Username, requestBody.Password, expTime); err != nil {
 		if err.Error() == "wrong username or password" {
 			return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: "Authentication error"})
 		}
@@ -70,8 +104,8 @@ func SignIn(ctx echo.Context) error {
 
 }
 
-func GetRemain(ctx echo.Context) error {
-	remain, err := database.GetRemain()
+func (h *handler) GetRemain(ctx echo.Context) error {
+	remain, err := h.usecase.GetRemain()
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "database error"})
@@ -81,12 +115,12 @@ func GetRemain(ctx echo.Context) error {
 
 }
 
-func Ping(ctx echo.Context) error {
-	usecase.Ping()
+func (h *handler) Ping(ctx echo.Context) error {
+	h.usecase.Ping()
 	return nil
 }
 
-func GetUniversity(ctx echo.Context) error {
+func (h *handler) GetUniversity(ctx echo.Context) error {
 
 	var requestBody GetUniversityDTO = GetUniversityDTO{-1}
 
@@ -94,13 +128,13 @@ func GetUniversity(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
 
-	result := usecase.ParseUniversityJson(requestBody.Order)
+	result := h.usecase.ParseUniversityJson(requestBody.Order)
 
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: result})
 
 }
 
-func AddStudent(ctx echo.Context) error {
+func (h *handler) AddStudent(ctx echo.Context) error {
 
 	username, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
 	if err != nil {
@@ -113,7 +147,7 @@ func AddStudent(ctx echo.Context) error {
 	if err := ctx.Bind(&requestBody); err != nil || requestBody.University == "" || requestBody.Points == "" {
 		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
 	}
-	if err = usecase.ParseStudentRequest(username, requestBody.University, requestBody.Points); err != nil {
+	if err = h.usecase.ParseStudentRequest(username, requestBody.University, requestBody.Points); err != nil {
 
 		if err.Error() == "submission of documents ended" {
 			return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: err.Error()})
@@ -125,7 +159,7 @@ func AddStudent(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Student added or updated"})
 }
 
-func EditSend(ctx echo.Context) error {
+func (h *handler) EditSend(ctx echo.Context) error {
 
 	request := EditSendDTO{""}
 
@@ -139,7 +173,7 @@ func EditSend(ctx echo.Context) error {
 		return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: err.Error()})
 	}
 
-	if err := usecase.EditSend(request.Status, username); err != nil {
+	if err := h.usecase.EditSend(request.Status, username); err != nil {
 		if err.Error() == "permission denied" {
 			return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: err.Error()})
 		}
@@ -150,8 +184,8 @@ func EditSend(ctx echo.Context) error {
 
 }
 
-func GetRecords(ctx echo.Context) error {
-	arr, err := usecase.ParseRecords()
+func (h *handler) GetRecords(ctx echo.Context) error {
+	arr, err := h.usecase.ParseRecords()
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
@@ -161,9 +195,9 @@ func GetRecords(ctx echo.Context) error {
 
 }
 
-func UserProfile(ctx echo.Context) error {
+func (h *handler) UserProfile(ctx echo.Context) error {
 
-	response, err := usecase.GetStudentInfo(ctx.Request().Header["Token"][0])
+	response, err := h.usecase.GetStudentInfo(ctx.Request().Header["Token"][0])
 	log.Println(response)
 
 	if err != nil {
@@ -173,12 +207,12 @@ func UserProfile(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: response})
 }
 
-func AutoLogin(ctx echo.Context) error {
+func (h *handler) AutoLogin(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Sign in ok"})
 }
 
-func GetResult(ctx echo.Context) error {
-	result, err := usecase.GetResult()
+func (h *handler) GetResult(ctx echo.Context) error {
+	result, err := h.usecase.GetResult()
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusUnauthorized, Payload: "Internal Server Error"})

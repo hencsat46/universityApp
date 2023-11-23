@@ -6,27 +6,52 @@ import (
 	"log"
 	"os"
 	"strconv"
-	database "universityServer/internal/database"
+	"universityServer/internal/api/handlers"
 	"universityServer/internal/models"
 	jwtToken "universityServer/internal/pkg/jwt"
 )
+
+type usecase struct {
+	repoInterfaces RepostitoryInterfaces
+}
+
+type RepostitoryInterfaces interface {
+	ReadUniversity(int) []models.Universities
+	GetRemain() (int64, error)
+	GetRecords() ([]models.StudentInfo, error)
+	AddStudentRecord(string, string, string) error
+	GetStatus() (bool, error)
+	GetId(string) (uint, error)
+	SetUser(string, string, string, string) error
+	SignIn(string, string) error
+	GetInfoDb(string) (models.StudentInfo, error)
+	GetResult() ([]models.ResultRecord, int, error)
+}
+
+func NewUsecase(repo RepostitoryInterfaces) handlers.UsecaseInterfaces {
+	return &usecase{repoInterfaces: repo}
+}
 
 func init() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }
 
-func ParseUniversityJson(number int) []models.Universities {
-	result := database.ReadUniversity(number)
+func (u *usecase) GetRemain() (int64, error) {
+	remain, err := u.repoInterfaces.GetRemain()
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+
+	return remain, nil
+}
+
+func (u *usecase) ParseUniversityJson(number int) []models.Universities {
+	result := u.repoInterfaces.ReadUniversity(number)
 
 	//log.Println(result)
 	return result
 
-}
-
-func GetRemain() (int64, error) {
-	remain, err := database.GetRemain()
-
-	return remain, err
 }
 
 func checkEmpty(username string, password string) bool {
@@ -37,12 +62,12 @@ func checkEmpty(username string, password string) bool {
 	return true
 }
 
-func Ping() (bool, error) {
+func (u *usecase) Ping() (bool, error) {
 	log.Println(os.Getenv("DOC_STATUS"))
 	return false, nil
 }
 
-func SignIn(username string, password string, expTime int) (string, error) {
+func (u *usecase) SignIn(username string, password string, expTime int) (string, error) {
 
 	check := checkEmpty(username, password)
 
@@ -50,14 +75,14 @@ func SignIn(username string, password string, expTime int) (string, error) {
 		return "", errors.New("username or password is empty")
 	}
 
-	err := database.SignIn(username, password)
+	err := u.repoInterfaces.SignIn(username, password)
 
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	userId, err := database.GetId(username)
+	userId, err := u.repoInterfaces.GetId(username)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -73,14 +98,14 @@ func SignIn(username string, password string, expTime int) (string, error) {
 
 }
 
-func ParseStudentRequest(username, studentUniversity, points string) error {
+func (u *usecase) ParseStudentRequest(username, studentUniversity, points string) error {
 	status, err := strconv.ParseBool(os.Getenv("DOC_STATUS"))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 	if status {
-		if err = database.AddStudentRecord(username, studentUniversity, points); err != nil {
+		if err = u.repoInterfaces.AddStudentRecord(username, studentUniversity, points); err != nil {
 			return err
 		} else {
 			return nil
@@ -92,7 +117,7 @@ func ParseStudentRequest(username, studentUniversity, points string) error {
 
 }
 
-func SignUp(studentName, studentSurname, username, password string) error {
+func (u *usecase) SignUp(studentName, studentSurname, username, password string) error {
 
 	check := checkEmpty(username, password)
 
@@ -100,7 +125,7 @@ func SignUp(studentName, studentSurname, username, password string) error {
 		return errors.New("username or password is empty")
 	}
 
-	err := database.SetUser(username, password, studentName, studentSurname)
+	err := u.repoInterfaces.SetUser(username, password, studentName, studentSurname)
 
 	if err != nil {
 		return err
@@ -110,9 +135,9 @@ func SignUp(studentName, studentSurname, username, password string) error {
 
 }
 
-func ParseRecords() ([]models.StudentInfo, error) {
+func (u *usecase) ParseRecords() ([]models.StudentInfo, error) {
 
-	arr, err := database.GetRecords()
+	arr, err := u.repoInterfaces.GetRecords()
 
 	if err != nil {
 		log.Println(err)
@@ -142,7 +167,7 @@ func ParseRecords() ([]models.StudentInfo, error) {
 
 }
 
-func EditSend(data, user string) error {
+func (u *usecase) EditSend(data, user string) error {
 	if user != "admin" {
 		return errors.New("permission denied")
 	}
@@ -168,7 +193,7 @@ func EditSend(data, user string) error {
 	return nil
 }
 
-func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
+func (u *usecase) GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 	username, err := jwtToken.GetUsernameFromToken(tokenHeader)
 
 	log.Println("Username of profile requester", username)
@@ -177,7 +202,7 @@ func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 		log.Println(err)
 		return models.StudentInfo{}, err
 	}
-	studentData, err := database.GetInfoDb(username)
+	studentData, err := u.repoInterfaces.GetInfoDb(username)
 
 	if err != nil {
 		log.Println(err)
@@ -187,7 +212,7 @@ func GetStudentInfo(tokenHeader string) (models.StudentInfo, error) {
 	return studentData, nil
 }
 
-func GetResult() ([]models.ResultRecord, error) {
+func (u *usecase) GetResult() ([]models.ResultRecord, error) {
 
 	status, err := strconv.ParseBool(os.Getenv("DOC_STATUS"))
 
@@ -199,7 +224,7 @@ func GetResult() ([]models.ResultRecord, error) {
 		return nil, nil
 	}
 
-	result, emptyCount, err := database.GetResult()
+	result, emptyCount, err := u.repoInterfaces.GetResult()
 
 	if err != nil {
 		log.Println(err)

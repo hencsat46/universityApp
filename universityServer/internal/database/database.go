@@ -5,17 +5,28 @@ import (
 	"log"
 	"strconv"
 
-	db "universityServer/internal/migrations"
+	"universityServer/internal/migrations"
 	"universityServer/internal/models"
 	dbhelp "universityServer/internal/pkg/dbHelp"
+	"universityServer/internal/tools/handle"
 
 	"gorm.io/gorm"
 )
 
-func ReadUniversity(border int) []models.Universities {
+type repostitory struct {
+	db *gorm.DB
+}
+
+func NewRepostitory() handle.RepostitoryInterfaces {
+	db := migrations.InitDB()
+
+	return &repostitory{db: db}
+}
+
+func (r *repostitory) ReadUniversity(border int) []models.Universities {
 	uni := make([]models.Universities, 2)
 
-	if err := db.DB.Offset(border).Limit(2).Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
+	if err := r.db.Offset(border).Limit(2).Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
 		log.Println(err)
 	}
 
@@ -23,11 +34,11 @@ func ReadUniversity(border int) []models.Universities {
 
 }
 
-func GetRemain() (int64, error) {
+func (r *repostitory) GetRemain() (int64, error) {
 
 	var remain int64
 
-	if err := db.DB.Model(&models.Universities{}).Count(&remain).Error; err != nil {
+	if err := r.db.Model(&models.Universities{}).Count(&remain).Error; err != nil {
 		log.Println(err)
 		return -1, err
 	}
@@ -36,17 +47,17 @@ func GetRemain() (int64, error) {
 
 }
 
-func GetRecords() ([]models.StudentInfo, error) {
+func (r *repostitory) GetRecords() ([]models.StudentInfo, error) {
 
 	var countQuery int64
 
-	if err := db.DB.Model(&models.Students_records{}).Count(&countQuery).Error; err != nil {
+	if err := r.db.Model(&models.Students_records{}).Count(&countQuery).Error; err != nil {
 		return nil, err
 	}
 
 	recordsArr := make([]models.StudentInfo, countQuery)
 
-	if err := db.DB.Table("users").Select([]string{"users.student_name", "users.student_surname", "universities.uni_name", "students_records.student_points"}).Joins("RIGHT JOIN students_records ON users.user_id = students_records.student_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&recordsArr).Error; err != nil {
+	if err := r.db.Table("users").Select([]string{"users.student_name", "users.student_surname", "universities.uni_name", "students_records.student_points"}).Joins("RIGHT JOIN students_records ON users.user_id = students_records.student_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&recordsArr).Error; err != nil {
 		return nil, err
 	}
 
@@ -54,21 +65,20 @@ func GetRecords() ([]models.StudentInfo, error) {
 
 }
 
-func AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
+func (r *repostitory) AddStudentRecord(studentName string, studentUniversity string, studentPoints string) error {
 	pointsInt, err := strconv.Atoi(studentPoints)
 	if err != nil {
 		return errors.New("cannot convert points")
 	}
 
-	if err = addRecord(studentName, studentUniversity, pointsInt); err != nil {
+	if err = addRecord(studentName, studentUniversity, pointsInt, r.db); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func addRecord(username string, universityName string, points int) error {
-	database := db.DB
+func addRecord(username string, universityName string, points int, database *gorm.DB) error {
 	student := models.Users{}
 	university := models.Universities{}
 	var hasStudent int64
@@ -110,22 +120,22 @@ func addRecord(username string, universityName string, points int) error {
 	return nil
 }
 
-func GetStatus() (bool, error) {
+func (r *repostitory) GetStatus() (bool, error) {
 
 	var result bool
 
-	if err := db.DB.Model(&models.Records_status{}).Select("status").Find(&result).Error; err != nil {
+	if err := r.db.Model(&models.Records_status{}).Select("status").Find(&result).Error; err != nil {
 		return false, err
 	}
 	return result, nil
 
 }
 
-func GetId(username string) (uint, error) {
+func (r *repostitory) GetId(username string) (uint, error) {
 
 	var userModel models.Users
 
-	if err := db.DB.Model(&models.Users{}).Where("username = ?", username).Find(&userModel).Error; err != nil {
+	if err := r.db.Model(&models.Users{}).Where("username = ?", username).Find(&userModel).Error; err != nil {
 		return 0, err
 	}
 
@@ -148,12 +158,12 @@ func GetId(username string) (uint, error) {
 	// return userId, nil
 }
 
-func SetUser(username string, password string, studentName string, studentSurname string) error {
+func (r *repostitory) SetUser(username string, password string, studentName string, studentSurname string) error {
 
 	user := models.Users{Username: username, Passwd: password, Student_name: studentName, Student_surname: studentSurname}
 	log.Println(user)
 
-	if status, err := checkUser(db.DB, &user); err != nil {
+	if status, err := checkUser(r.db, &user); err != nil {
 		return err
 	} else {
 		if status == 1 {
@@ -161,7 +171,7 @@ func SetUser(username string, password string, studentName string, studentSurnam
 		}
 	}
 
-	if err := db.DB.Omit("User_id").Create(&user).Error; err != nil {
+	if err := r.db.Omit("User_id").Create(&user).Error; err != nil {
 		log.Println(err)
 		return err
 	}
@@ -181,10 +191,10 @@ func checkUser(database *gorm.DB, model *models.Users) (int64, error) {
 
 }
 
-func SignIn(username, password string) error {
+func (r *repostitory) SignIn(username, password string) error {
 	var result int64
 
-	if err := db.DB.Model(&models.Users{}).Where(&models.Users{Username: username, Passwd: password}).Count(&result).Error; err != nil {
+	if err := r.db.Model(&models.Users{}).Where(&models.Users{Username: username, Passwd: password}).Count(&result).Error; err != nil {
 		return err
 	}
 
@@ -195,11 +205,11 @@ func SignIn(username, password string) error {
 
 }
 
-func GetInfoDb(username string) (models.StudentInfo, error) {
+func (r *repostitory) GetInfoDb(username string) (models.StudentInfo, error) {
 
 	var studentData models.StudentInfo
 
-	if err := db.DB.Model(&models.Users{}).Select([]string{"users.username", "users.student_name", "users.student_surname", "universities.uni_name"}).Where("username = ?", username).Joins("LEFT JOIN students_records ON students_records.student_id = users.user_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&studentData).Error; err != nil {
+	if err := r.db.Model(&models.Users{}).Select([]string{"users.username", "users.student_name", "users.student_surname", "universities.uni_name"}).Where("username = ?", username).Joins("LEFT JOIN students_records ON students_records.student_id = users.user_id").Joins("LEFT JOIN universities ON universities.uni_id = students_records.student_university").Find(&studentData).Error; err != nil {
 		return models.StudentInfo{}, nil
 	}
 
@@ -207,22 +217,22 @@ func GetInfoDb(username string) (models.StudentInfo, error) {
 
 }
 
-func GetResult() ([]models.ResultRecord, int, error) {
+func (r *repostitory) GetResult() ([]models.ResultRecord, int, error) {
 	var uniCount int64
 	var universityName []string
 	var universityId []uint
 
-	if err := db.DB.Model(&models.Universities{}).Count(&uniCount).Error; err != nil {
+	if err := r.db.Model(&models.Universities{}).Count(&uniCount).Error; err != nil {
 		return nil, 0, err
 	}
 
 	result := make([]models.ResultRecord, uniCount)
 
-	if err := db.DB.Model(&models.Universities{}).Select("uni_name").Find(&universityName).Error; err != nil {
+	if err := r.db.Model(&models.Universities{}).Select("uni_name").Find(&universityName).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := db.DB.Model(&models.Universities{}).Select("uni_id").Find(&universityId).Error; err != nil {
+	if err := r.db.Model(&models.Universities{}).Select("uni_id").Find(&universityId).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -232,17 +242,17 @@ func GetResult() ([]models.ResultRecord, int, error) {
 		var studentCount int64
 		var seatsCount int
 
-		if err := db.DB.Model(models.Universities{}).Select("seats_count").Where("uni_id = ?", universityId[i]).Find(&seatsCount).Error; err != nil {
+		if err := r.db.Model(models.Universities{}).Select("seats_count").Where("uni_id = ?", universityId[i]).Find(&seatsCount).Error; err != nil {
 			return nil, 0, err
 		}
 
-		if err := db.DB.Model(models.Students_records{}).Where("student_university = ?", universityId[i]).Count(&studentCount).Error; err != nil {
+		if err := r.db.Model(models.Students_records{}).Where("student_university = ?", universityId[i]).Count(&studentCount).Error; err != nil {
 			return nil, 0, err
 		}
 
 		students := make([]models.ResultStudent, studentCount)
 
-		if err := db.DB.Table("users").Limit(seatsCount).Where("student_university = ?", universityId[i]).Joins("LEFT JOIN students_records ON users.user_id = students_records.student_id").Select([]string{"users.student_name", "users.student_surname", "students_records.student_points"}).Order("students_records.student_points DESC").Find(&students).Error; err != nil {
+		if err := r.db.Table("users").Limit(seatsCount).Where("student_university = ?", universityId[i]).Joins("LEFT JOIN students_records ON users.user_id = students_records.student_id").Select([]string{"users.student_name", "users.student_surname", "students_records.student_points"}).Order("students_records.student_points DESC").Find(&students).Error; err != nil {
 			return nil, 0, err
 		}
 
