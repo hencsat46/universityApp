@@ -23,10 +23,10 @@ func NewRepostitory() handle.RepostitoryInterfaces {
 	return &repostitory{db: db}
 }
 
-func (r *repostitory) ReadUniversity(border int) []models.Universities {
-	uni := make([]models.Universities, 2)
+func (r *repostitory) ReadUniversity() []models.Universities {
+	uni := make([]models.Universities, 0)
 
-	if err := r.db.Offset(border).Limit(2).Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
+	if err := r.db.Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
 		log.Println(err)
 	}
 

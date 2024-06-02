@@ -17,7 +17,7 @@ type handler struct {
 }
 
 type UsecaseInterfaces interface {
-	ParseUniversityJson(int) []models.Universities
+	ParseUniversityJson() []models.Universities
 	Ping() (bool, error)
 	SignIn(string, string, int) (string, error)
 	ParseStudentRequest(string, string, string) error
@@ -34,7 +34,7 @@ func NewHandler(usecase UsecaseInterfaces) *handler {
 }
 
 func (h *handler) Routes(e *echo.Echo) {
-	e.POST("/getUniversity", h.GetUniversity)
+	e.GET("/get_universities", h.GetUniversity)
 	e.POST("/signup", h.SignUp)
 	e.POST("/signin", h.SignIn)
 	e.GET("/token", jwtActions.ValidationJWT(func(ctx echo.Context) error { return nil }))
@@ -122,13 +122,7 @@ func (h *handler) Ping(ctx echo.Context) error {
 
 func (h *handler) GetUniversity(ctx echo.Context) error {
 
-	var requestBody GetUniversityDTO = GetUniversityDTO{-1}
-
-	if err := ctx.Bind(&requestBody); err != nil || requestBody.Order == -1 {
-		return ctx.JSON(http.StatusBadRequest, &models.Response{Status: http.StatusBadRequest, Payload: "wrong json format"})
-	}
-
-	result := h.usecase.ParseUniversityJson(requestBody.Order)
+	result := h.usecase.ParseUniversityJson()
 
 	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: result})
 

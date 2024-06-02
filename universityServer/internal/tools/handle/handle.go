@@ -16,7 +16,7 @@ type usecase struct {
 }
 
 type RepostitoryInterfaces interface {
-	ReadUniversity(int) []models.Universities
+	ReadUniversity() []models.Universities
 	GetRemain() (int64, error)
 	GetRecords() ([]models.StudentInfo, error)
 	AddStudentRecord(string, string, string) error
@@ -46,10 +46,9 @@ func (u *usecase) GetRemain() (int64, error) {
 	return remain, nil
 }
 
-func (u *usecase) ParseUniversityJson(number int) []models.Universities {
-	result := u.repoInterfaces.ReadUniversity(number)
+func (u *usecase) ParseUniversityJson() []models.Universities {
+	result := u.repoInterfaces.ReadUniversity()
 
-	//log.Println(result)
 	return result
 
 }

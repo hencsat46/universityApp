@@ -126,12 +126,8 @@ function setCookie(stringToken) {
 
 async function getUniversity(url, data) {
     const response = await fetch(url, {
-        method: "POST",
+        method: "GET",
         mode: "cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: data
     })
     
     return response.json()
@@ -216,63 +212,44 @@ async function requestUniversity(url, data) {
 
 }
 
-let remained = 0
-
-async function getRemain() {
-    const response = await remainRequest("http://localhost:3000/getRemain")
-    
-    remained = response.Payload
-
-    console.log(remained)
-    await access()
-    await access()
-}
-
-getRemain()
-
-async function remainRequest(url) {
-    const request = new Request(url, {
-        method: "GET",
-        mode: "cors",
-    })
-
-    const response = await fetch(request)
-
-    return await response.json()
-
-}
-
+makeJsonUniversity()
 
 async function makeJsonUniversity() {
-    flag = false
     let universityCount = document.querySelectorAll(".uni-wrapper").length
-    if (remained <= universityCount) {
-        
-        return
-    }
-    if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 10) {
-        const universityOrder = universityCount
-        const requestJson = `{"order": ${universityOrder}}`
-        const response = getUniversity("http://localhost:3000/getUniversity", requestJson)
-        const universityObject = (await response).Payload
-        
-        console.log(universityObject)
+    
+    
+    const response = await fetch("http://localhost:3000/get_universities", {
+        method: "GET",
+        mode: 'cors',
+    })
+    const universityObject = await response.json()
+    
+    console.log(universityObject)
 
 
-        makeUniversityElem(universityObject[0].Uni_name, universityObject[0].Uni_des, universityObject[0].Uni_img, universityObject[1].Uni_name, universityObject[1].Uni_des, universityObject[1].Uni_img)
-        
-    }
-    flag = true
-}
+    const universities = new Array()
 
-async function access() {
-    if (flag) {
-        await makeJsonUniversity()
+    for (let i = 0; i < universityObject.Payload.length / 2; i++) {
+        const universityElem = new Array()
+        universityElem.push(universityObject.Payload[i * 2])
+        universityElem.push(universityObject.Payload[i * 2 + 1])
+        universities.push(universityElem)
+        console.log("жопа")
     }
+    console.log(universities)
+    //makeUniversityElem(universityObject[0].Uni_name, universityObject[0].Uni_des, universityObject[0].Uni_img, universityObject[1].Uni_name, universityObject[1].Uni_des, universityObject[1].Uni_img)
+
+    for (let i = 0; i< universities.length; i++) {
+        makeUniversityElem(universities[i][0].Uni_name, universities[i][0].Uni_des, universities[i][0].Uni_img, universities[i][1].Uni_name, universities[i][1].Uni_des, universities[i][1].Uni_img)
+    }
+        
 }
 
 async function makeUniversityElem(firstName, firstDescription, firstImg, secondName, secondDescription, secondImg) {
-    const htmlElement = `
+    let firstUni = ""
+    let secondUni = ""
+    if (firstName.length != 0) {
+        firstUni = `
         <div class="uni-wrapper">
             <div class="info-container">
                 <img src="${firstImg}" alt="x">
@@ -287,13 +264,17 @@ async function makeUniversityElem(firstName, firstDescription, firstImg, secondN
                 </div>
             </div>
         </div>
+        `
+    }
+    if (secondName.length != 0) {
+        secondUni = `
         <div class="uni-wrapper">
             <div class="info-container">
                 <img src="${secondImg}" alt="x">
                 <div class="text-container">
-                    <h2>${secondName}</h2>
+                    <h2>${secondImg}</h2>
                     <div class="uni-text">
-                        ${secondDescription}
+                        ${secondDescription} 
                     </div>
                     <button class="sub-docs" onclick="setUniversity(this)">
                         <div class="btn-text">Подать документы</div>
@@ -301,13 +282,14 @@ async function makeUniversityElem(firstName, firstDescription, firstImg, secondN
                 </div>
             </div>
         </div>
-    `
+        `
+    }
     const liElement = document.createElement("li")
-    liElement.innerHTML = htmlElement
+    liElement.innerHTML = firstUni + secondUni
     document.querySelector("ul.ul").append(liElement)
 }
 
 
 
-window.onscroll=access
+
 
