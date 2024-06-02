@@ -18,7 +18,7 @@ type handler struct {
 
 type UsecaseInterfaces interface {
 	ParseUniversityJson() []models.Universities
-	Ping() (bool, error)
+	Ping(string) (int, error)
 	SignIn(string, string, int) (string, error)
 	ParseStudentRequest(string, string, string) error
 	SignUp(string, string, string, string) error
@@ -44,7 +44,7 @@ func (h *handler) Routes(e *echo.Echo) {
 	e.POST("/stopSend", jwtActions.ValidationJWT(h.EditSend))
 	e.GET("/profile", jwtActions.ValidationJWT(h.UserProfile))
 	e.GET("/", jwtActions.ValidationJWT(h.AutoLogin))
-	e.GET("/ping", h.Ping)
+	e.GET("/ping", jwtActions.ValidationJWT(h.Ping))
 	e.GET("/getresult", h.GetResult)
 }
 
@@ -116,8 +116,19 @@ func (h *handler) GetRemain(ctx echo.Context) error {
 }
 
 func (h *handler) Ping(ctx echo.Context) error {
-	h.usecase.Ping()
-	return nil
+
+	username, err := jwtActions.GetUsernameFromToken(ctx.Request().Header["Token"][0])
+	if err != nil {
+		fmt.Println(err)
+		return ctx.JSON(http.StatusUnauthorized, &models.Response{Status: http.StatusUnauthorized, Payload: "nigga"})
+	}
+
+	universityId, err := h.usecase.Ping(username)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
+	}
+
+	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: universityId})
 }
 
 func (h *handler) GetUniversity(ctx echo.Context) error {
@@ -150,7 +161,12 @@ func (h *handler) AddStudent(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
 	}
 
-	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: "Student added or updated"})
+	universityId, err := h.usecase.Ping(username)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, &models.Response{Status: http.StatusInternalServerError, Payload: "Internal Server Error"})
+	}
+
+	return ctx.JSON(http.StatusOK, &models.Response{Status: http.StatusOK, Payload: universityId})
 }
 
 func (h *handler) EditSend(ctx echo.Context) error {

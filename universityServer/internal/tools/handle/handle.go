@@ -26,6 +26,7 @@ type RepostitoryInterfaces interface {
 	SignIn(string, string) error
 	GetInfoDb(string) (models.StudentInfo, error)
 	GetResult() ([]models.ResultRecord, int, error)
+	GetUniversityId(string) (int, error)
 }
 
 func NewUsecase(repo RepostitoryInterfaces) handlers.UsecaseInterfaces {
@@ -61,9 +62,9 @@ func checkEmpty(username string, password string) bool {
 	return true
 }
 
-func (u *usecase) Ping() (bool, error) {
-	log.Println(os.Getenv("DOC_STATUS"))
-	return false, nil
+func (u *usecase) Ping(username string) (int, error) {
+	universityId, err := u.repoInterfaces.GetUniversityId(username)
+	return universityId, err
 }
 
 func (u *usecase) SignIn(username string, password string, expTime int) (string, error) {

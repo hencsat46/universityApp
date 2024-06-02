@@ -75,6 +75,7 @@ async function signInButton(element) {
         setCookie(response.Payload + "; expires=" + date)
         document.querySelector(".sign-btns").style.display = "none"
         document.querySelector(".username-icon").style.display = "flex"
+        window.location.reload()
     }
 }
 
@@ -157,30 +158,52 @@ function setUniversity(element) {
 async function autoLogin() {
     const token = getToken()
     console.log(token)
-    if (token == null) return
-    const request = new Request("http://localhost:3000/", {
-        method: "GET",
-        mode: "cors",
-        headers : {
-            "Token": token,
+    if (token != null) {
+        const request = new Request("http://localhost:3000/", {
+            method: "GET",
+            mode: "cors",
+            headers : {
+                "Token": token,
+            }
+        })
+        console.log("aaaaaaaaaaaaa")
+        console.log(request)
+        console.log("hello")
+        const response = await (await fetch(request)).json()
+    
+        console.log(response)
+    
+        if (response.Status == 200 && response.Payload == "Sign in ok") {
+            document.querySelector(".sign-btns").style.display = "none"
+            document.querySelector(".username-icon").style.display = "flex"
         }
-    })
-    console.log("aaaaaaaaaaaaa")
-    console.log(request)
-    console.log("hello")
-    const response = await (await fetch(request)).json()
-
-    console.log(response)
-
-    if (response.Status == 200 && response.Payload == "Sign in ok") {
-        document.querySelector(".sign-btns").style.display = "none"
-        document.querySelector(".username-icon").style.display = "flex"
     }
+
+    const request2 = new Request("http://localhost:3000/ping", {
+            method: "GET",
+            mode: "cors",
+            headers : {
+                "Token": token,
+            },
+        })
+    
+    const response2 = await (await fetch(request2)).json()
+    if (response2.Status == 200 && response2.Payload != null) {
+        document.querySelector(".universe").style.display = 'block'
+        document.querySelector(".change-university").style.display = 'flex'
+    } else {
+        makeJsonUniversity()
+    }
+
 }
 
-autoLogin()
+async function loadUniversities() {
+    document.querySelector(".universe").style.display = 'none'
+    document.querySelector(".change-university").style.display = 'none'
+    makeJsonUniversity()
+}
 
-function submitUniversity(element) {
+async function submitUniversity(element) {
     const pointsString = element.parentNode.querySelector(".docs-input").value
     
     const dataObject = {
@@ -188,9 +211,10 @@ function submitUniversity(element) {
         Points: pointsString
     }
     
-
-    const response = requestUniversity("http://localhost:3000/addStudent", dataObject)
-    response.then(value => console.log(value))
+    
+    const response = await requestUniversity("http://localhost:3000/addStudent", dataObject)
+    if (response.Status == 200) 
+        window.location.reload()
 }
 
 async function requestUniversity(url, data) {
@@ -203,21 +227,33 @@ async function requestUniversity(url, data) {
         },
         body: JSON.stringify(data)
     })
-
-    const response = (await fetch(request)).json()
-
+    
+    const response = await (await fetch(request)).json()
+    
     return response
-
-
-
 }
 
-makeJsonUniversity()
+autoLogin()
 
 async function makeJsonUniversity() {
-    let universityCount = document.querySelectorAll(".uni-wrapper").length
+    const token = getToken()
+    let selectedUniversity
+    if (token != null) {
+        const request2 = new Request("http://localhost:3000/ping", {
+            method: "GET",
+            mode: "cors",
+            headers : {
+                "Token": token,
+            },
+        })
     
-    
+        const response2 = await (await fetch(request2)).json()
+        console.log(response2)
+        selectedUniversity = response2.Payload
+    }
+
+    console.log(selectedUniversity)
+       
     const response = await fetch("http://localhost:3000/get_universities", {
         method: "GET",
         mode: 'cors',
@@ -231,26 +267,32 @@ async function makeJsonUniversity() {
 
     for (let i = 0; i < universityObject.Payload.length / 2; i++) {
         const universityElem = new Array()
-        universityElem.push(universityObject.Payload[i * 2])
-        universityElem.push(universityObject.Payload[i * 2 + 1])
+        for (let j = 0; j < 2; j++) {
+            if (universityObject.Payload.length - (i * 2 + j) > 0) {
+                if (parseInt(universityObject.Payload[i * 2 + j].Uni_id) == selectedUniversity)
+                    universityObject.Payload[i * 2 + j].Uni_name = ""
+                universityElem.push(universityObject.Payload[i * 2 + j])
+            }
+        }
+        
+        
         universities.push(universityElem)
         console.log("жопа")
     }
     console.log(universities)
-    //makeUniversityElem(universityObject[0].Uni_name, universityObject[0].Uni_des, universityObject[0].Uni_img, universityObject[1].Uni_name, universityObject[1].Uni_des, universityObject[1].Uni_img)
 
-    for (let i = 0; i< universities.length; i++) {
-        makeUniversityElem(universities[i][0].Uni_name, universities[i][0].Uni_des, universities[i][0].Uni_img, universities[i][1].Uni_name, universities[i][1].Uni_des, universities[i][1].Uni_img)
+    for (let i = 0; i < universities.length; i++) {
+        makeUniversityElem(universities[i][0].Uni_id, universities[i][0].Uni_name, universities[i][0].Uni_des, universities[i][0].Uni_img, universities[i][1].Uni_id, universities[i][1].Uni_name, universities[i][1].Uni_des, universities[i][1].Uni_img)
     }
         
 }
 
-async function makeUniversityElem(firstName, firstDescription, firstImg, secondName, secondDescription, secondImg) {
+async function makeUniversityElem(firstId, firstName, firstDescription, firstImg, secondId, secondName, secondDescription, secondImg) {
     let firstUni = ""
     let secondUni = ""
     if (firstName.length != 0) {
         firstUni = `
-        <div class="uni-wrapper">
+        <div class="uni-wrapper" id="${firstId}">
             <div class="info-container">
                 <img src="${firstImg}" alt="x">
                 <div class="text-container">
@@ -268,11 +310,11 @@ async function makeUniversityElem(firstName, firstDescription, firstImg, secondN
     }
     if (secondName.length != 0) {
         secondUni = `
-        <div class="uni-wrapper">
+        <div class="uni-wrapper" id="${secondId}">
             <div class="info-container">
                 <img src="${secondImg}" alt="x">
                 <div class="text-container">
-                    <h2>${secondImg}</h2>
+                    <h2>${secondName}</h2>
                     <div class="uni-text">
                         ${secondDescription} 
                     </div>

@@ -26,7 +26,7 @@ func NewRepostitory() handle.RepostitoryInterfaces {
 func (r *repostitory) ReadUniversity() []models.Universities {
 	uni := make([]models.Universities, 0)
 
-	if err := r.db.Select("Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
+	if err := r.db.Select("Uni_id", "Uni_name", "Uni_des", "Uni_img").Find(&uni).Error; err != nil {
 		log.Println(err)
 	}
 
@@ -273,4 +273,25 @@ func (r *repostitory) GetResult() ([]models.ResultRecord, int, error) {
 	// 	log.Println(universityName[i])
 	// }
 	return result, emptyCount, nil
+}
+
+func (r *repostitory) GetUniversityId(username string) (int, error) {
+	var userId int
+	var universityId int
+
+	if err := r.db.Table("users").Select("user_id").Where("username = ?", username).Find(&userId).Error; err != nil {
+		log.Println(err)
+		return -1, err
+	}
+	log.Println(userId)
+
+	if err := r.db.Table("students_records").Select("student_university").Where("student_id = ?", userId).Find(&universityId).Error; err != nil {
+		log.Println(err)
+		return -1, err
+	}
+
+	log.Println(universityId)
+
+	return universityId, nil
+
 }
